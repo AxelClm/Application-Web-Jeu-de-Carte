@@ -1,15 +1,25 @@
 var mysql = require('mysql');
- 
-console.log('Get connection ...');
- 
-var conn = mysql.createConnection({
-  database: 'mytestdb',
+var bdd = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "12345"
+  password: "root",
+  database : "DBServ"
 });
- 
-conn.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
+
+module.exports= {
+	searchNamePass : function(name,password){
+		return new Promise(function(resolve , reject){
+			bdd.connect(function(error){
+				if(error){reject(error);throw error;}
+				bdd.query("SELECT * FROM User Where nom = \""+name+ "\"and Password = \""+password+"\";",function (err,result,fields){
+					if(err){reject(error);throw err;}{
+						resolve(result);
+					}
+				});
+
+			});
+		});
+	}
+
+
+};

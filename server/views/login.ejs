@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Jeu de carte-Login</title>
+        <style>
+            a {text-decoration: none; color: black;}
+        </style>
+    </head>
+
+    <body>
+        <h1>Choisir un nom</h1>
+        <form action="/login/sendLogin" method="post">
+            <p>
+                <label for="newName">Entrez vos informations</label>
+                <input type="text" name="nameUser" id="nameUser" autofocus />
+                <input type="text" name="password" id="password"/>
+                <input type="submit" />
+            </p>
+        </form>
+    </body>
+</html>
