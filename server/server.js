@@ -15,9 +15,9 @@ var md5 = require('md5');
 app.use(session);
 io.use(sharedsession(session));
 app.get("/login",function(req,res){
-	res.render('login.ejs');
+	res.render('login.ejs',{error : 0});
 });
-app.post("/login/sendLogin",urlencodedParser,function(req,res){
+app.post("/login",urlencodedParser,function(req,res){
 		var name = req.body.nameUser;
 		var password = req.body.password;
 	if (typeof(name) == typeof("str") && typeof(password) == typeof("str")){
@@ -27,23 +27,27 @@ app.post("/login/sendLogin",urlencodedParser,function(req,res){
 			if(resolve.length != 0){
 				req.session.name = resolve[0]["Nom"];
 				req.session.id = resolve[0]["idUser"];
-				req.session.spectateur = resolve[0]["spectateur"];
+				req.session.spectateur = resolve[0]["Spectateur"];
 				res.redirect("/home");
 			}
 			else{
-				console.log("la combinaison n'existe pas");
-				//res.render("/home");
+				res.render('login.ejs',{error : 1});
 			}	
 		});
 		
 	}
 	else{
-		console.log("pas de string");
 		res.render('login.ejs');
 	}
 });
 app.get("/home",function(req,res){
-	res.render('home.ejs');
+	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur == undefined){
+		console.log(req.session.name);
+		res.redirect("login.ejs");
+	} 
+	else{
+		res.render("home.ejs");
+	}
 });
 app.get("/result",function(req,res){
 	res.render('result.ejs');
@@ -53,5 +57,14 @@ app.get("/join",function(req,res){
 });
 app.get("/game",function(req,res){
 	res.render('game.ejs');
+});
+/* Si la page n'est pas trouvée*/
+app.use(function(req,res,next){
+	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur == undefined){
+		res.redirect("/login");
+	}
+	else {
+		res.redirect("/home");
+	}
 });
 server.listen(8080);
