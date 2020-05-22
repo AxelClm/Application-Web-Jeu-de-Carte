@@ -1,23 +1,29 @@
 html, body{
 	display: flex;
 	margin: 0;
-	height: 100%;
+	height: auto;
 	width: 100%;
 }
 
 div, aside {
 	border-style: solid;
-
+	height: auto;
 }
 
 #main{
 	border-color: red;
 	width: inherit;
+	background-color: #E1E2C3;
 }
 
 #sidebar {
 	overflow: auto;
 	flex-basis: 25%;
+	background-color: #E1E2C3;
+}
+
+li{
+	height: 100%;
 }
 
 /*
@@ -36,6 +42,9 @@ ul{
 */
 #header h1 {
 	text-align: center;
+	background-color: #FEFFD0;
+	margin-bottom: 0;
+	padding-bottom: 8px;
 }
 
 #contenuImg{
@@ -47,7 +56,8 @@ ul{
 
 #contenuImg > div {
   background-color: #f1f1f1;
-  width: 100px;
+  width: 300px;
+  height: 300px;
   margin: 10px;
   text-align: center;
   line-height: 75px;
