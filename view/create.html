@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Configuration de la salle</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+	</head>
+	<body>
+		<div class="container">
+			<h1>Configuration de la salle</h1>
+			<form method="post" id="formSalle">
+				<div class="row">
+					<div class="form-group col-md-3">
+						<label for="nbCarte">Nombre de cartes</label>
+						<input type="number" id="nbCarte" class="form-control" placeholder="Entrez un nombre de carte" value="48" required>
+						<small class="form-text text-muted">Par défaut le nombre de carte est de 48.</small>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="form-group col-md-3">
+						<label>Nombre de tas</label>
+						<select id="nbTas" class="form-control">
+							<option>2</option>
+							<option>3</option>
+							<option>4</option>
+							<option>5</option>
+							<option>6</option>
+							<option>7</option>
+						</select>
+					</div>
+				</div>
+				<button type="submit" class="btn btn-primary">Soumettre</button>
+
+			</form>
+		</div>
+	</body>
+</html>
