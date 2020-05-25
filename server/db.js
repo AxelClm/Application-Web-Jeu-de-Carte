@@ -15,5 +15,14 @@ module.exports= {
 				}
 			});
 		});
+	},
+	createUser : function(name){
+		return new Promise(function(resolve , reject){
+			bdd.query("INSERT INTO USER(Nom,Spectateur) Values (\""+name+"\",false);",function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
 	}
 };

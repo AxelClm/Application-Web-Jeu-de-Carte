@@ -9,10 +9,10 @@
     </head>
 
     <body>
-        <h1>Choisir un nom</h1>
+        <h1>Entrez vos informations</h1>
         <form action="/login" method="post">
             <p>
-                <label for="newName">Entrez vos informations</label>
+                <label for="newName">(Connection en tant que Spectateur)</label>
                 <input type="text" name="nameUser" id="nameUser" autofocus />
                 <input type="text" name="password" id="password"/>
                 <input type="submit" />
@@ -21,5 +21,13 @@
         <% if(error == 1) { %>
             <p> identifiants incorrectes ! </p> 
         <% } %>
+        <form action="/loginJ" method="post">
+            <p>
+                <label for="newName">(Connection en tant que Spectateur)</label>
+                <input type="text" name="nameUserJ" id="nameUserJ"/>
+                <input type="submit" />
+            </p>
+        </form>
+
     </body>
 </html>

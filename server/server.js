@@ -40,13 +40,30 @@ app.post("/login",urlencodedParser,function(req,res){
 		res.render('login.ejs');
 	}
 });
+app.post("/loginJ",urlencodedParser,function(req,res){
+	var name = req.body.nameUserJ;
+	if(typeof(name) == typeof("str") && name.length > 1){
+		bdd.createUser(name).then(function(resolve){
+			req.session.name = name;
+			req.session.id = resolve["insertId"];
+			req.session.spectateur = 0;
+			res.redirect("/home");
+		});
+	}
+});
 app.get("/home",function(req,res){
 	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur == undefined){
 		console.log(req.session.name);
 		res.redirect("login.ejs");
 	} 
 	else{
-		res.render("home.ejs");
+		if(req.session.spectateur == 1){
+			res.render("home.ejs");
+		}
+		else{
+			res.render("homeJ.ejs");
+		}
+		
 	}
 });
 app.get("/result",function(req,res){
