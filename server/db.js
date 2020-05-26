@@ -24,5 +24,23 @@ module.exports= {
 				}
 			});
 		});
+	},
+	getPaquet : function(){
+		return new Promise(function(resolve,reject){
+			bdd.query("SELECT User.Nom as nomUser,Paquet.Nom as paquetNom,idPaquet FROM User,Paquet where Paquet.Createur = User.idUser",function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+	},
+	createSalle : function(idPaquet,nbrTasMax){
+		return new Promise(function(resolve,reject){
+			bdd.query("INSERT INTO SALLE (idPaquet,nbrTasMax) VALUES ("+idPaquet+","+nbrTasMax+");",function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
 	}
 };

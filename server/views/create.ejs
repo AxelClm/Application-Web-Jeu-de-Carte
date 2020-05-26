@@ -8,24 +8,21 @@
 	<body>
 		<div class="container">
 			<h1>Configuration de la salle</h1>
-			<form method="post" id="formSalle">
+			<form method="post" id="formSalle" action="/create">
 				<div class="row">
 					<div class="form-group col-md-3">
-						<label for="nbCarte">Nombre de tas max</label>
-						<input type="number" id="nbCarte" class="form-control" placeholder="Entrez un nombre de carte" value="7" required>
+						<label for="nbrTas">Nombre de tas max</label>
+						<input type="number" id="nbrTas" name="nbrTas" class="form-control" placeholder="Entrez un nombre de carte" value="7" required>
 					</div>
 				</div>
 
 				<div class="row">
 					<div class="form-group col-md-3">
 						<label>Selection du paquet</label>
-						<select id="nbTas" class="form-control">
-							<option>2</option>
-							<option>3</option>
-							<option>4</option>
-							<option>5</option>
-							<option>6</option>
-							<option>7</option>
+						<select id="idPaquet" name="idPaquet" class="form-control">
+							<% paquets.forEach( p => { %>
+								<option value='<%=p["idPaquet"]%>'><%= p["paquetNom"]%> : <%= p["nomUser"] %></option>
+							<% }); %>
 						</select>
 					</div>
 				</div>

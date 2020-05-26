@@ -41,7 +41,7 @@ app.post("/login",urlencodedParser,function(req,res){
 	}
 });
 app.post("/loginJ",urlencodedParser,function(req,res){
-	var name = req.body.nameUserJ;
+	var name = ent.encode(req.body.nameUserJ);
 	if(typeof(name) == typeof("str") && name.length > 1){
 		bdd.createUser(name).then(function(resolve){
 			req.session.name = name;
@@ -62,6 +62,33 @@ app.get("/home",function(req,res){
 		}
 		else{
 			res.render("homeJ.ejs");
+		}
+		
+	}
+});
+app.get("/create",function(req,res){
+	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		bdd.getPaquet().then(function(resolve){
+			res.render('create.ejs',{paquets : resolve});
+		});
+	}
+});
+app.post("/create",urlencodedParser,function(req,res){
+	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		var nbrTas = req.body.nbrTas;
+		var idPaquet = req.body.idPaquet;
+		console.log(req.body.nbrTas);
+		console.log(req.body.idPaquet);
+		if(nbrTas != undefined || idPaquet != undefined){
+			bdd.createSalle(idPaquet,nbrTas).then(function(resolve){
+				console.log(resolve["insertId"]);
+			});
 		}
 		
 	}
