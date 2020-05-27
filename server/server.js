@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 var ent = require('ent');
@@ -12,6 +13,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var bdd = require('./db.js');
 var md5 = require('md5');
+app.use(express.static(__dirname + '\\files'));
 app.use(session);
 io.use(sharedsession(session));
 app.get("/login",function(req,res){
@@ -53,17 +55,20 @@ app.post("/loginJ",urlencodedParser,function(req,res){
 });
 app.get("/home",function(req,res){
 	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur == undefined){
-		console.log(req.session.name);
 		res.redirect("login.ejs");
 	} 
 	else{
-		if(req.session.spectateur == 1){
-			res.render("home.ejs");
+		if(req.session.salleJoined != undefined){
+			res.redirect("/game/"+req.session.salleJoined);
 		}
 		else{
-			res.render("homeJ.ejs");
-		}
-		
+			if(req.session.spectateur == 1){
+				res.render("home.ejs");
+			}
+			else{
+				res.render("homeJ.ejs");
+			}
+		}	
 	}
 });
 app.get("/create",function(req,res){
@@ -82,12 +87,11 @@ app.post("/create",urlencodedParser,function(req,res){
 	}
 	else{
 		var nbrTas = req.body.nbrTas;
-		var idPaquet = req.body.idPaquet;
-		console.log(req.body.nbrTas);
-		console.log(req.body.idPaquet);
+		var idPaquet = req.body.idPaquet;;
 		if(nbrTas != undefined || idPaquet != undefined){
 			bdd.createSalle(idPaquet,nbrTas).then(function(resolve){
-				console.log(resolve["insertId"]);
+				req.session.salleJoined = resolve["insertId"];
+				res.redirect("/home");
 			});
 		}
 		
@@ -99,10 +103,12 @@ app.get("/result",function(req,res){
 app.get("/join",function(req,res){
 	res.render('home.ejs');
 });
-app.get("/game",function(req,res){
+app.get("/game/:idSalle",function(req,res){
 	res.render('game.ejs');
 });
+
 /* Si la page n'est pas trouvée*/
+
 app.use(function(req,res,next){
 	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur == undefined){
 		res.redirect("/login");
@@ -112,3 +118,4 @@ app.use(function(req,res,next){
 	}
 });
 server.listen(8080);
+

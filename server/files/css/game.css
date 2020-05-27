@@ -1,0 +1,11 @@
+body{
+	margin:0;
+	padding:0;
+}
+.spinner-border.beforeLoading{
+	position: absolute;
+    top: calc(50% - 50px);
+    right: calc(50% - 50px);
+    height: 100px;
+    width: 100px;
+}
