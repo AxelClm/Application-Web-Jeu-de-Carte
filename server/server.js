@@ -13,6 +13,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var bdd = require('./db.js');
 var md5 = require('md5');
+var AsyncLock = require('async-lock');
+var lock = new AsyncLock();
 app.use(express.static(__dirname + '\\files'));
 app.use(session);
 io.use(sharedsession(session));
@@ -28,7 +30,7 @@ app.post("/login",urlencodedParser,function(req,res){
 		bdd.searchNamePass(name,password).then(function(resolve){
 			if(resolve.length != 0){
 				req.session.name = resolve[0]["Nom"];
-				req.session.id = resolve[0]["idUser"];
+				req.session.idUser = resolve[0]["idUser"];
 				req.session.spectateur = resolve[0]["Spectateur"];
 				res.redirect("/home");
 			}
@@ -47,14 +49,14 @@ app.post("/loginJ",urlencodedParser,function(req,res){
 	if(typeof(name) == typeof("str") && name.length > 1){
 		bdd.createUser(name).then(function(resolve){
 			req.session.name = name;
-			req.session.id = resolve["insertId"];
+			req.session.idUser = resolve["insertId"];
 			req.session.spectateur = 0;
 			res.redirect("/home");
 		});
 	}
 });
 app.get("/home",function(req,res){
-	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur == undefined){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined){
 		res.redirect("login.ejs");
 	} 
 	else{
@@ -72,7 +74,7 @@ app.get("/home",function(req,res){
 	}
 });
 app.get("/create",function(req,res){
-	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur != 1){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
 		res.redirect("/home");
 	}
 	else{
@@ -82,7 +84,7 @@ app.get("/create",function(req,res){
 	}
 });
 app.post("/create",urlencodedParser,function(req,res){
-	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur != 1){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
 		res.redirect("/home");
 	}
 	else{
@@ -104,18 +106,71 @@ app.get("/join",function(req,res){
 	res.render('home.ejs');
 });
 app.get("/game/:idSalle",function(req,res){
-	res.render('game.ejs');
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined || req.session.salleJoined == undefined){
+		if(req.session.salleJoined == undefined){
+			console.log(req.params.idSalle);
+			req.session.salleJoined = req.params.idSalle;
+		}
+		res.redirect("/login");
+	}
+	else{
+		res.render('game.ejs');
+	}
 });
 
 /* Si la page n'est pas trouvée*/
 
 app.use(function(req,res,next){
-	if(req.session.name == undefined || req.session.id == undefined || req.session.spectateur == undefined){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined){
 		res.redirect("/login");
 	}
 	else {
 		res.redirect("/home");
 	}
 });
+io.on('connection',function (socket){
+	var session = socket.handshake.session;
+	if(session.name == undefined || session.idUser == undefined || session.spectateur == undefined){
+		socket.emit("console","Pas connecté");
+		socket.emit("erreur",0);
+		socket.disconnect();
+	}
+	else{
+		if(session.spectateur == 1){
+			bdd.getStatut(session.salleJoined).then(function(statut){
+				if(statut == 0){ //La partie n'a pas encore commencé , il n'y a rien a rattrapé
+					socket.emit("statut",0);
+					socket.join("salle"+session.salleJoined);
+				}
+			});
+		}
+		else{
+			lock.acquire(session.salleJoined,function(release){ //Peut être inutile pour l'instant 
+				bdd.getJoueur(session.salleJoined).then(function(idJoueur){
+					if(idJoueur == null){
+						bdd.setJoueur(session.salleJoined,session.idUser).then(function(){release()});
+
+						socket.on("disconnect",function(socket){
+							lock.acquire(session.salleJoined,function(release){
+								console.log("entré");
+								bdd.setJoueur(session.salleJoined,"null").then(function(resolve){
+									release();
+								});
+							},1); 
+						});
+					}
+					else{
+						release();
+						socket.emit("erreur",1);
+						socket.emit("console","Un joueur est deja sur le jeu");
+						socket.disconnect();
+						
+					}
+				});
+			},1);
+			}
+		}
+});
+
 server.listen(8080);
 
