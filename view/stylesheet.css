@@ -5,10 +5,7 @@ html, body{
 	width: 100%;
 }
 
-div, aside {
-	border-style: solid;
-	height: auto;
-}
+
 
 #main{
 	border-color: red;

@@ -5,8 +5,14 @@
 		<title>my site</title>
 		<link type="text/css" rel="stylesheet" href="stylesheet.css">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+			<!-- Bootstrap js -->	
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 	</head>
 	<body>
+		
 		<aside id="sidebar">
 			<ul class="list-group h-auto">
 				<li class="list-group-item pb-5 list-group-item-secondary">A trier</li>
@@ -26,7 +32,10 @@
 			</div>
 
 			<div id="contenuImg">
-				<div>1</div>
+				<div id="oui">1		<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button></div>
   				<div>2</div>
   				<div>3</div>  
   				<div>4</div>
@@ -38,5 +47,64 @@
 			</div>
 		</div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Choix du tas</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div>
+					<input type="radio" id="t1" name="drone" value="huey"
+					checked>
+					<label for="t1">Tas n°1</label>
+				</div>
+
+				<div>
+					<input type="radio" id="t2" name="drone" value="dewey">
+					<label for="t2">Tas n°2</label>
+				</div>
+
+				<div>
+					<input type="radio" id="t3" name="drone" value="louie">
+					<label for="t3">Tas n°3</label>
+				</div>
+
+				<div>
+					<input type="radio" id="huey" name="t4" value="huey">
+					<label for="t4">Tas n°4</label>
+				</div>
+
+				<div>
+					<input type="radio" id="dewey" name="t5" value="dewey">
+					<label for="t5">Tas n°5</label>
+				</div>
+
+				<div>
+					<input type="radio" id="louie" name="t6" value="louie">
+					<label for="t6">Tas n°6</label>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	</body>
+	<script type="text/javascript">
+		var cible = document.getElementById('oui');
+
+		cible.addEventListener("click", function (ev) {
+			console.log("Salut !!");
+		})
+		
+	</script>
 </html>
