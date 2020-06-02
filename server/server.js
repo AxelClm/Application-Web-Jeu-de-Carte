@@ -137,23 +137,28 @@ io.on('connection',function (socket){
 	}
 	else{
 		if(session.spectateur == 1){
-			bdd.getStatut(session.salleJoined).then(function(statut){
+			lock.acquire(session.salleJoined,function(release){
+				bdd.getStatut(session.salleJoined).then(function(statut){
 				if(statut == 0){ //La partie n'a pas encore commencé , il n'y a rien a rattrapé
 					socket.emit("statut",0);
 					socket.join("salle"+session.salleJoined);
-				}
-			});
+					}
+				});
+				release();
+			})
 		}
 		else{
 			lock.acquire(session.salleJoined,function(release){ //Peut être inutile pour l'instant 
 				bdd.getJoueur(session.salleJoined).then(function(idJoueur){
 					if(idJoueur == null){
 						bdd.setJoueur(session.salleJoined,session.idUser).then(function(){release()});
-
+						io.sockets.in("salle"+session.salleJoined).emit('statut',1);
+						socket.emit("statut",1);
 						socket.on("disconnect",function(socket){
 							lock.acquire(session.salleJoined,function(release){
 								console.log("entré");
 								bdd.setJoueur(session.salleJoined,"null").then(function(resolve){
+									io.sockets.in("salle"+session.salleJoined).emit('statut',0);
 									release();
 								});
 							},1); 

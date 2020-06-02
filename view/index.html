@@ -12,7 +12,6 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 	</head>
 	<body>
-		
 		<aside id="sidebar">
 			<ul class="list-group h-auto">
 				<li class="list-group-item pb-5 list-group-item-secondary">A trier</li>
@@ -22,7 +21,7 @@
 				<li class="list-group-item list-group-item-secondary">tas n°4 <button type="button" class="ml-4 btn btn-info">Aperçu</button></li>
 				<li class="list-group-item list-group-item-secondary">tas n°5 <button type="button" class="ml-4 btn btn-info">Aperçu</button></li>
 				<li class="list-group-item list-group-item-secondary">tas n°6 <button type="button" class="ml-4 btn btn-info">Aperçu</button></li>
-				<li class="list-group-item list-group-item-secondary ">tas n°7 <button type="button" class="ml-4 btn btn-info">Aperçu</button></li>
+				<li class="list-group-item list-group-item-secondary">tas n°7 <button type="button" class="ml-4 btn btn-info">Aperçu</button></li>
 			</ul>
 		</aside>
 
@@ -31,18 +30,15 @@
 				<h1>A trier</h1>
 			</div>
 
-			<div id="contenuImg">
-				<div id="oui">1		<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-  Launch demo modal
-</button></div>
-  				<div>2</div>
-  				<div>3</div>  
-  				<div>4</div>
-  				<div>1</div>
-  				<div>2</div>
-  				<div>3</div>  
-  				<div>4</div>
+			<div id="contenuImg" >
+				<div id="oui" data-toggle="modal" data-target="#exampleModal">1		<!-- Button trigger modal --></div>
+  				<div data-toggle="modal" data-target="#exampleModal" data-idCarte="1">2</div>
+  				<div data-toggle="modal" data-target="#exampleModal">3</div>  
+  				<div data-toggle="modal" data-target="#exampleModal">4</div>
+  				<div data-toggle="modal" data-target="#exampleModal">1</div>
+  				<div data-toggle="modal" data-target="#exampleModal">2</div>
+  				<div data-toggle="modal" data-target="#exampleModal">3</div>  
+  				<div data-toggle="modal" data-target="#exampleModal">4</div>
   				
 			</div>
 		</div>
@@ -97,14 +93,6 @@
 		</div>
 	</div>
 </div>
-
 	</body>
-	<script type="text/javascript">
-		var cible = document.getElementById('oui');
-
-		cible.addEventListener("click", function (ev) {
-			console.log("Salut !!");
-		})
-		
-	</script>
+	
 </html>
