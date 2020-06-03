@@ -54,7 +54,8 @@
 
 		// on ajoute dans les cartes dans la balise <div> ayant pour id "contenuImg"
 		var conteneur = document.getElementById('contenuImg');
-
+		$("#contenuImg").stop();
+		$("#contenuImg").hide();
 		//on vide le conteneur au cas où la
 		// la page affiche déjà des cartes
 		while(conteneur.hasChildNodes()){
@@ -78,6 +79,7 @@
 			div.appendChild(p);
 			conteneur.appendChild(div);
 		}
+		$("#contenuImg").fadeIn(200);
 	}
 	$('#exampleModal').on('show.bs.modal', function (event) {
   var img = $(event.relatedTarget);
