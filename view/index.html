@@ -7,12 +7,13 @@
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
-			<!-- Bootstrap js -->	
+			<!-- Bootstrap js -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	</head>
 	<body>
-		
+
 		<aside id="sidebar">
 			<ul class="list-group h-auto">
 				<li class="list-group-item list-group-item-secondary">A trier <button type="button" class="ml-4 btn btn-info" onclick="afficheTas(0)">Aperçu</button></li>
@@ -25,19 +26,13 @@
 				<li class="list-group-item list-group-item-secondary">tas n°7 <button type="button" class="ml-4 btn btn-info" onclick="afficheTas(7)">Aperçu</button></li>
 			</ul>
 		</aside>
-
 		<div id="main">
 			<div id="header">
 				<h1>A trier</h1>
 			</div>
-
 			<div id="contenuImg">
-				
 			</div>
 		</div>
-
-
-		<!-- Modal 
 		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
@@ -81,12 +76,109 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary">Save changes</button>
+						<button id="soumission" type="button" class="btn btn-primary">Save changes</button>
 					</div>
 				</div>
 			</div>
-		</div>-->
-	<script src="deplacementCart.js" type="text/javascript"></script>
+		</div>
+	<script>
+	//Variables
+	var listeTas = {}; //objet contenant toute les tas
+	var tasActuel = 0;
+	var suffixe = "Tas"
+
+
+	// creation des tas vides
+	for (var i = 0; i < 8; i++) {
+		listeTas[suffixe+i] = [];
+	}
+
+	console.log(listeTas);
+
+
+	//ajout des cartes dans le tas initial
+	for (var i = 0; i < 5; i++) {
+		listeTas.Tas0.push({"id" : i+1, "emplacement" : "images/ExempleCarte"+(i+1)});
+	}
+
+	listeTas.Tas7.push({"id" : 12, "emplacement" : "images/ExempleCarte"+(12)});
+	console.log(listeTas);
+
+
+	//methode qui supprime Element de son tas pour
+	//le déplacer vers tas choisi par l'utilisateur
+	function changementTas (choix, idCarte){
+		//on cherche la position de la carte selectionee dans le tableau
+		var txt = suffixe+tasActuel;
+		var indexCarte = listeTas[txt].findIndex(x => x.id == idCarte);
+		var tmp = listeTas[txt].splice(indexCarte, 1);
+
+		console.log("pos "+ indexCarte);
+
+		console.log("carte tirée :");
+		console.log(tmp[0]);
+
+		tmp = tmp[0];
+
+		//on transfert la carte dans le tas selectionné
+		txt = suffixe+choix;
+		listeTas[txt].push(tmp);
+		console.log("Nouveau tableau");
+		console.log(listeTas);
+
+		//on reactualise l'affichage
+		afficheTas(tasActuel);
+	}
+
+
+	//methode qui affiche les cartes appartenant au tas sélectionné
+	function afficheTas(argument) {
+		var txt = suffixe+argument;
+		tasActuel = argument;
+
+		// on ajoute dans les cartes dans la balise <div> ayant pour id "contenuImg"
+		var conteneur = document.getElementById('contenuImg');
+
+		//on vide le conteneur au cas où la
+		// la page affiche déjà des cartes
+		while(conteneur.hasChildNodes()){
+			conteneur.removeChild(conteneur.lastChild);
+		}
+
+		console.log(listeTas);
+		console.log(txt);
+		console.log(listeTas[txt]);
+
+		//on ajoute les images a la balise <div> avec le classe image
+		for (var i = 0; i < listeTas[txt].length; i++) {
+			var div = document.createElement("div");
+			var p = document.createElement("p");
+			div.setAttribute("data-toggle","modal");
+			div.setAttribute("data-target","#exampleModal");
+			var texte = document.createTextNode(listeTas[txt][i]["emplacement"]);
+			div.setAttribute('id', listeTas[txt][i]["id"]);
+			div.classList.add("image");
+			p.appendChild(texte);
+			div.appendChild(p);
+			conteneur.appendChild(div);
+		}
+	}
+	$('#exampleModal').on('show.bs.modal', function (event) {
+  var img = $(event.relatedTarget);
+	var id = img[0].id;
+	console.log("Carte trouvée : "+ id);
+	var modal = $(this);
+	var liste = modal.find('.modal-body input');
+	$('#soumission').click(function (){
+		var button = $(this);
+		console.log(button);
+		var tas = $('input[name=tas]:checked').val();
+		button.onClick = changementTas(tas,id);
+		$("#soumission").unbind('click');
+		modal.modal('hide');
+		});
+	});
+</script>
 	</body>
-	
+
 </html>
