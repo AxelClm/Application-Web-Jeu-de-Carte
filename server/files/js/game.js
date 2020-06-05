@@ -194,6 +194,7 @@ function initmodal(){
 					modal.modal('hide');
 				});
 			});
+		afficheTas(0);
       	clearInterval(checkExist);
    		}
 	}, 100);

@@ -93,6 +93,7 @@ app.post("/create",urlencodedParser,function(req,res){
 		if(nbrTas != undefined || idPaquet != undefined){
 			bdd.createSalle(idPaquet,nbrTas).then(function(resolve){
 				req.session.salleJoined = resolve["insertId"];
+				bdd.initSalle(req.session.salleJoined,nbrTas,idPaquet);
 				res.redirect("/home");
 			});
 		}
@@ -154,8 +155,9 @@ io.on('connection',function (socket){
 						bdd.setJoueur(session.salleJoined,session.idUser).then(function(){release()});
 						io.sockets.in("salle"+session.salleJoined).emit('statut',1);
 						socket.emit("statut",1);
+						
 						socket.on("disconnect",function(socket){
-							lock.acquire(session.salleJoined,function(release){
+							lock.acquire(session.salleJoined,function(release){ 
 								console.log("entré");
 								bdd.setJoueur(session.salleJoined,"null").then(function(resolve){
 									io.sockets.in("salle"+session.salleJoined).emit('statut',0);

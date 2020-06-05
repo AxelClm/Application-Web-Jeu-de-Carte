@@ -19,8 +19,6 @@
 
 	listeTas.Tas7.push({"id" : 12, "emplacement" : "images/ExempleCarte"+(12)});
 	console.log(listeTas);
-
-
 	//methode qui supprime Element de son tas pour
 	//le déplacer vers tas choisi par l'utilisateur
 	function changementTas (choix, idCarte){
@@ -51,7 +49,6 @@
 	function afficheTas(argument) {
 		var txt = suffixe+argument;
 		tasActuel = argument;
-
 		// on ajoute dans les cartes dans la balise <div> ayant pour id "contenuImg"
 		var conteneur = document.getElementById('contenuImg');
 		$("#contenuImg").stop();
@@ -61,11 +58,12 @@
 		while(conteneur.hasChildNodes()){
 			conteneur.removeChild(conteneur.lastChild);
 		}
-
+		//On change l'affichage
+		$("#nomTas").html("Tas n°"+tasActuel);
+		$("#capacitéTas").html(listeTas[txt].length);
 		console.log(listeTas);
 		console.log(txt);
 		console.log(listeTas[txt]);
-
 		//on ajoute les images a la balise <div> avec le classe image
 		for (var i = 0; i < listeTas[txt].length; i++) {
 			var div = document.createElement("div");

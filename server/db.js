@@ -70,5 +70,58 @@ module.exports= {
 				}
 			});
 		});
+	},
+	initSalle: function(idSalle,nbrTasMax,idPaquet){
+		return new Promise(function(resolve,reject){
+			createTas(idSalle,nbrTasMax).then(function(resolved){
+				initTas(idPaquet,resolved["insertId"]).then(function(resolved2){
+					resolve(resolved2);
+				});
+			});
+		});
 	}
 };
+
+function createTas (idSalle,nbrTasMax){
+		return new Promise(function(resolve,reject){
+			var liste = [];
+			for (var i = 0 ; i<nbrTasMax;i++){
+				liste[i]= ["Tas n°"+i, idSalle];
+			}
+			console.log(liste);
+			bdd.query("INSERT INTO TAS (nom,idSalle) VALUES ?",[liste],function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+			}
+		});
+	});
+}
+function initTas(idPaquet,idTas){
+	return new Promise(function(resolve,reject){
+		getPaquet(idPaquet).then(function (resolved){
+			console.log(idTas);
+			console.log(idPaquet);
+			console.log(resolved);
+			var liste = []
+			for(var i = 0 ;i<resolved.length;i++){
+				liste[i] = [idTas,resolved[i]["idLpaquet"]];
+			}
+			console.log(liste);
+			bdd.query("INSERT INTO ligneTas (idTas,idLPaquet) VALUES ?",[liste],function (err,result,fields){
+				if(err){reject(err);throw err;}{
+					resolve(result);
+				}
+			});
+		});
+	});
+}
+function getPaquet(idPaquet){
+	return new Promise(function(resolve,reject){
+			bdd.query("SELECT * FROM lignePaquet WHERE idPaquet = ?",idPaquet,function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				console.log(result);
+				resolve(result);
+				}
+			});
+		});
+}
