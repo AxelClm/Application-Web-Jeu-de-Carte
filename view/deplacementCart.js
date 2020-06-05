@@ -17,9 +17,6 @@
 		listeTas.Tas0.push({"id" : i+1, "emplacement" : "images/ExempleCarte"+(i+1)});
 	}
 
-	listeTas.Tas7.push({"id" : 12, "emplacement" : "images/ExempleCarte"+(12)});
-	console.log(listeTas);
-
 
 	//methode qui supprime Element de son tas pour
 	//le déplacer vers tas choisi par l'utilisateur
@@ -66,23 +63,27 @@
 		console.log(txt);
 		console.log(listeTas[txt]);
 
-		//on ajoute les images a la balise <div> avec le classe image
+
+		//on ajoute les images dans la balise <div id="contenuImg">
 		for (var i = 0; i < listeTas[txt].length; i++) {
-			var div = document.createElement("div");
-			var p = document.createElement("p");
-			div.setAttribute("data-toggle","modal");
-			div.setAttribute("data-target","#exampleModal");
-			var texte = document.createTextNode(listeTas[txt][i]["emplacement"]);
-			div.setAttribute('id', listeTas[txt][i]["id"]);
-			div.classList.add("image");
-			p.appendChild(texte);
-			div.appendChild(p);
-			conteneur.appendChild(div);
+			var img = document.createElement('img');
+			img.setAttribute("data-toggle","modal");
+			img.setAttribute("data-target","#exampleModal");
+			img.setAttribute("src",(listeTas[txt][i]["emplacement"]+(".png")));
+			img.setAttribute('id',listeTas[txt][i]["id"]);
+
+			//ajout de marge aux images
+			img.style.marginRight = "10px";
+			img.style.marginBottom = "10px";
+
+			conteneur.appendChild(img);
 		}
 		$("#contenuImg").fadeIn(200);
 	}
+
+
 	$('#exampleModal').on('show.bs.modal', function (event) {
-  var img = $(event.relatedTarget);
+ 	var img = $(event.relatedTarget);
 	var id = img[0].id;
 	console.log("Carte trouvée : "+ id);
 	var modal = $(this);
