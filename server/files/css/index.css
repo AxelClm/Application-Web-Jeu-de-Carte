@@ -141,7 +141,11 @@ a.article:hover {
     min-height: 100vh;
     transition: all 0.3s;
 }
-
+img{
+    border-style: groove!important;
+    border-width: thin;
+    border-color: #f8f9fa;
+}
 /* ---------------------------------------------------
     MEDIAQUERIES
 ----------------------------------------------------- */
@@ -152,6 +156,12 @@ a.article:hover {
     }
     #sidebar {
         margin-left: -250px;
+    }
+    img{
+        max-width: calc(100vw - 50px);
+    }
+    .modal-dialog{
+        max-width: calc(100vw - 34px);
     }
     #sidebar.active {
         margin-left: 0;
