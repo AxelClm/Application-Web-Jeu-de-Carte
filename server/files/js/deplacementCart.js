@@ -46,7 +46,7 @@
 
 
 	//methode qui affiche les cartes appartenant au tas sélectionné
-	function afficheTas(argument) {
+	function afficheTas(argument,nom) {
 		var txt = suffixe+argument;
 		tasActuel = argument;
 		// on ajoute dans les cartes dans la balise <div> ayant pour id "contenuImg"
@@ -59,7 +59,7 @@
 			conteneur.removeChild(conteneur.lastChild);
 		}
 		//On change l'affichage
-		$("#nomTas").html("Tas n°"+tasActuel);
+		$("#nomTas").html(nom);
 		$("#capacitéTas").html(listeTas[txt].length);
 		console.log(listeTas);
 		console.log(txt);

@@ -2,6 +2,8 @@ const socket = io.connect('http://localhost:8080');
 const urlcourante = document.location.href; 
 const idSalle = urlcourante.substring (urlcourante.lastIndexOf( "/" )+1 );
 
+var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
+var ligneTasDB = 'none';
 socket.on("console",function(message){
 	console.log(message);
 });
@@ -21,19 +23,30 @@ socket.on("statut",function(statut){
 			switchWaitingForPlayer();
 			break;
 		case 1:
-			switchGameMode();
+			socket.emit("getTas","true");
+			loadGame();
 			break;
 		
 	}
 });
 socket.on("Tas",function(data){
-	console.log(data);
-	socket.emit("getLTas","true");
+	tasDB = JSON.parse(data);
 });
 
 socket.on("LigneTas",function(data){
-	console.log(data);
+	ligneTasDB = JSON.parse(data);
 });
+function loadGame(){
+	var checkinit = setInterval(function (){
+		if(tasDB != "none" && ligneTasDB != "none"){
+			console.log(tasDB);
+			console.log(ligneTasDB);
+			switchGameMode();
+			clearInterval(checkinit);
+			console.log("Tas et LigneTas init");
+		}
+	},100);
+}
 function switchWaitingForPlayer(){
 	let container = document.querySelector("body");
 	container.innerHTML = "";
@@ -55,7 +68,7 @@ function switchGameMode(){
 	showLoadingScreen(container);
 		let wrapper = document.createElement("div");
 		wrapper.className ="wrapper";
-		createSideBar(wrapper,7);
+		createSideBar(wrapper);
 		createContent(wrapper);
 		createModal(wrapper,7);
 	container.innerHTML = "";
@@ -63,7 +76,7 @@ function switchGameMode(){
 	initmodal();
 
 }
-function createSideBar(wrapper,nbrTas){
+function createSideBar(wrapper){
 	let sidebar = document.createElement("nav");
 		sidebar.id = "sidebar";
 			let ul = document.createElement("ul");
@@ -80,12 +93,12 @@ function createSideBar(wrapper,nbrTas){
 					let tasUL = document.createElement("ul");
 						tasUL.className="collapse list-unstyled";
 						tasUL.id = "tasSubMenu";
-							for(var i = 0;i<nbrTas;i++){
+							for(var i = 0;i<tasDB.length;i++){
 								let liTas = document.createElement("li");
 										let tas = document.createElement("a");
-										tas.num = i;
-										tas.onclick = function(){console.log(this.num);afficheTas(this.num)};
-										tas.innerHTML = "Tas n°"+i;
+										tas.num = tasDB[i]["idTas"];
+										tas.onclick = function(){console.log(this.num);afficheTas(this.innerHTML)};
+										tas.innerHTML = tasDB[i]["nom"];
 									liTas.appendChild(tas);
 								tasUL.appendChild(liTas);
 							}
@@ -111,7 +124,7 @@ function createContent(wrapper){
 					button.id = "sidebarCollapse";
 				container.appendChild(button);
 					let div = document.createElement("div");
-					div.innerHTML="A trier sqkdjqksjdqjslkjdskqjsdj";
+					div.innerHTML="";
 					div.id = "nomTas"
 				container.appendChild(div);
 					let div2 = document.createElement("div");
@@ -148,18 +161,18 @@ function createModal(wrapper,nbrTas){
 			modalContent.appendChild(modalHeader);
 				let modalBody = document.createElement("div");
 					modalBody.className="modal-body";
-					for(var i =0;i<nbrTas;i++){
+					for(var i =0;i<tasDB.length;i++){
 						let div = document.createElement("div");
 							let inputButton = document.createElement("input");
 								inputButton.setAttribute("type","radio");
 								inputButton.setAttribute("name","tas");
 								inputButton.setAttribute("value",i);
-								inputButton.id = "t"+i;
+								inputButton.id = "t"+tasDB[i]["idTas"];
 								inputButton.setAttribute("checked","true");
 							div.appendChild(inputButton);
 							let label = document.createElement("label");
 								label.setAttribute("for","t"+i);
-								label.innerHTML = "Tas n°"+i;
+								label.innerHTML = tasDB[i]["nom"];
 							div.appendChild(label);
 						modalBody.appendChild(div);
 					}
