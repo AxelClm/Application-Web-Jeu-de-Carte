@@ -1,24 +1,30 @@
-	//Variables
+		//Variables
 	var listeTas = {}; //objet contenant toute les tas
 	var tasActuel = 0;
 	var suffixe = "Tas"
 
+	// cartes et tas recuperes de la base de donnee
+	var tasDB = [{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"},{"idTas":138,"nom":"Tas n°2"},{"idTas":139,"nom":"Tas n°3"},{"idTas":140,"nom":"Tas n°4"},{"idTas":141,"nom":"Tas n°5"},{"idTas":142,"nom":"Tas n°6"}];
+	var carteDB = [{"idTas":171,"idCarte":1,"image":"1"},{"idTas":171,"idCarte":1,"image":"1"},{"idTas":171,"idCarte":2,"image":"2"}];
 
-	// creation des tas vides
-	for (var i = 0; i < 8; i++) {
-		listeTas[suffixe+i] = [];
+	initTas(tasDB, carteDB);
+
+	// methode qui remplit tas à trier de carte
+	function initTas(tas, carte){
+		// creation des tas vides
+		for (var i = 0; i < tas.length; i++) {
+			listeTas[suffixe+i] = [];
+			// ajout de l'id du tas au debut de tableau
+			listeTas[suffixe+i].push(tas[i]["idTas"]);
+
+		}
+
+		// ajout de carte dans le tas initial
+		for (var i = 0; i < carte.length; i++){
+			listeTas.Tas0.push({"id" : carteDB[i]["idCarte"], "emplacement" : "images/ExempleCarte"+carteDB[i]["idCarte"]});
+		}
 	}
 
-	console.log(listeTas);
-
-
-	//ajout des cartes dans le tas initial
-	for (var i = 0; i < 5; i++) {
-		listeTas.Tas0.push({"id" : i+1, "emplacement" : "images/ExempleCarte"+(i+1)});
-	}
-
-	listeTas.Tas7.push({"id" : 12, "emplacement" : "images/ExempleCarte"+(12)});
-	console.log(listeTas);
 	//methode qui supprime Element de son tas pour
 	//le déplacer vers tas choisi par l'utilisateur
 	function changementTas (choix, idCarte){
@@ -66,7 +72,8 @@
 		console.log(listeTas[txt]);
 		//on ajoute les images a la balise <div> avec le classe image
 		//on ajoute les images dans la balise <div id="contenuImg">
-		for (var i = 0; i < listeTas[txt].length; i++) {
+		//on commence par 1 car le premier indice contient l'id du tas
+		for (var i = 1; i < listeTas[txt].length; i++) {
 			var img = document.createElement('img');
 			img.setAttribute("data-toggle","modal");
 			img.setAttribute("data-target","#exampleModal");
