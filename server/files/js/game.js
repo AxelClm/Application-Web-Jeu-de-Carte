@@ -39,6 +39,7 @@ socket.on("LigneTas",function(data){
 function loadGame(){
 	var checkinit = setInterval(function (){
 		if(tasDB != "none" && ligneTasDB != "none"){
+			initTas(tasDB,ligneTasDB);
 			console.log(tasDB);
 			console.log(ligneTasDB);
 			switchGameMode();
@@ -97,7 +98,7 @@ function createSideBar(wrapper){
 								let liTas = document.createElement("li");
 										let tas = document.createElement("a");
 										tas.num = tasDB[i]["idTas"];
-										tas.onclick = function(){console.log(this.num);afficheTas(this.innerHTML)};
+										tas.onclick = function(){console.log(this.num);afficheTas(this.num,this.innerHTML)};
 										tas.innerHTML = tasDB[i]["nom"];
 									liTas.appendChild(tas);
 								tasUL.appendChild(liTas);
@@ -166,7 +167,7 @@ function createModal(wrapper,nbrTas){
 							let inputButton = document.createElement("input");
 								inputButton.setAttribute("type","radio");
 								inputButton.setAttribute("name","tas");
-								inputButton.setAttribute("value",i);
+								inputButton.setAttribute("value",tasDB[i]["idTas"]);
 								inputButton.id = "t"+tasDB[i]["idTas"];
 								inputButton.setAttribute("checked","true");
 							div.appendChild(inputButton);
@@ -214,7 +215,7 @@ function initmodal(){
 					modal.modal('hide');
 				});
 			});
-		afficheTas(0);
+		afficheTas(tasDB[0]["idTas"], tasDB[0]["nom"]);
       	clearInterval(checkExist);
    		}
 	}, 100);
