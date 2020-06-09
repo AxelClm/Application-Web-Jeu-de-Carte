@@ -26,7 +26,14 @@ socket.on("statut",function(statut){
 		
 	}
 });
+socket.on("Tas",function(data){
+	console.log(data);
+	socket.emit("getLTas","true");
+});
 
+socket.on("LigneTas",function(data){
+	console.log(data);
+});
 function switchWaitingForPlayer(){
 	let container = document.querySelector("body");
 	container.innerHTML = "";
