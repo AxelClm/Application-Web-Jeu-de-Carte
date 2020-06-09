@@ -3,19 +3,22 @@
 	var tasActuel = 0;
 	var suffixe = "Tas"
 
+	// cartes et tas recuperes de la base de donnee (simulation)
+	var tasDB = [{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"},{"idTas":138,"nom":"Tas n°2"},{"idTas":139,"nom":"Tas n°3"},{"idTas":140,"nom":"Tas n°4"},{"idTas":141,"nom":"Tas n°5"},{"idTas":142,"nom":"Tas n°6"}];
+	var carteDB = [{"idTas":171,"idCarte":1,"image":"1"},{"idTas":171,"idCarte":1,"image":"1"},{"idTas":171,"idCarte":2,"image":"2"}];
 
 	// creation des tas vides
 	for (var i = 0; i < 8; i++) {
 		listeTas[suffixe+i] = [];
 	}
 
-	console.log(listeTas);
-
 
 	//ajout des cartes dans le tas initial
-	for (var i = 0; i < 5; i++) {
-		listeTas.Tas0.push({"id" : i+1, "emplacement" : "images/ExempleCarte"+(i+1)});
+	for (var i = 0; i< carteDB.length; i++) {
+		listeTas.Tas0.push({"id" : carteDB[i]["idCarte"], "emplacement" : "images/ExempleCarte"+carteDB[i]["idCarte"]});
 	}
+
+	console.log(listeTas.Tas0);
 
 
 	//methode qui supprime Element de son tas pour
