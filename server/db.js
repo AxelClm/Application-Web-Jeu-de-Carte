@@ -79,6 +79,25 @@ module.exports= {
 				});
 			});
 		});
+	},
+	getTas: function(idSalle){
+		return new Promise(function(resolve,reject){
+			bdd.query("SELECT idTas,nom from Tas where idSalle = ?",idSalle,function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+	},
+	getLTas: function(idSalle){
+		return new Promise(function(resolve,reject){
+			bdd.query("select Tas.idTas,Carte.idCarte,image from Tas,LigneTas,LignePaquet,Carte where tas.idTas = ligneTas.idTas and idSalle = ?"+ 
+				" and ligneTas.idLPaquet = LignePaquet.idLpaquet and LignePaquet.idCarte = Carte.idCarte",idSalle,function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
 	}
 };
 

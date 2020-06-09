@@ -115,7 +115,13 @@ app.get("/game/:idSalle",function(req,res){
 		res.redirect("/login");
 	}
 	else{
-		res.render('game.ejs');
+		if(req.session.salleJoined != req.params.idSalle){
+			req.session.salleJoined = req.params.idSalle;
+			res.redirect("/home");
+		}
+		else{
+			res.render('game.ejs');
+		}
 	}
 });
 
@@ -137,6 +143,17 @@ io.on('connection',function (socket){
 		socket.disconnect();
 	}
 	else{
+		socket.on("getTas",function(){
+			lock.acquire(session.salleJoined,function(release){
+				bdd.getTas(session.salleJoined).then(function(resolve){
+					socket.emit("Tas",JSON.stringify(resolve));
+					bdd.getLTas(session.salleJoined).then(function(resolve2){
+						socket.emit("LigneTas",JSON.stringify(resolve2));
+						release();
+					});
+				});
+			});
+		});
 		if(session.spectateur == 1){
 			lock.acquire(session.salleJoined,function(release){
 				bdd.getStatut(session.salleJoined).then(function(statut){
@@ -146,7 +163,7 @@ io.on('connection',function (socket){
 					}
 				});
 				release();
-			})
+			});
 		}
 		else{
 			lock.acquire(session.salleJoined,function(release){ //Peut être inutile pour l'instant 
