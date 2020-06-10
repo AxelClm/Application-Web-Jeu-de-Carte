@@ -91,16 +91,44 @@ module.exports= {
 	},
 	getLTas: function(idSalle){
 		return new Promise(function(resolve,reject){
-			bdd.query("select Tas.idTas,Carte.idCarte,image from Tas,LigneTas,LignePaquet,Carte where tas.idTas = ligneTas.idTas and idSalle = ?"+ 
+			bdd.query("select Tas.idTas,LigneTas.idLpaquet,Carte.idCarte,image from Tas,LigneTas,LignePaquet,Carte where tas.idTas = ligneTas.idTas and idSalle = ?"+ 
 				" and ligneTas.idLPaquet = LignePaquet.idLpaquet and LignePaquet.idCarte = Carte.idCarte",idSalle,function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
 			});
 		});
+	},
+	moveCard : function(idTas,idLpaquet,idTasCible){
+		return new Promise(function(resolve,reject){
+			deleteLTas(idTas,idLpaquet).then(function(resolved){
+				if(resolved["affectedRows"] == 1){
+					insertIntoTas(parseInt(idTasCible),idLpaquet).then(function(resolved2){
+						resolve(resolved2);
+					});
+				}
+			});
+		});
 	}
 };
-
+function deleteLTas(idTas,idLpaquet){
+	return new Promise(function(resolve,reject){
+			bdd.query("DELETE FROM LIGNETAS WHERE IDTAS = ? AND IDLPAQUET = ?",[idTas,idLpaquet],function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+}
+function  insertIntoTas(idTas,idLpaquet){
+	return new Promise(function(resolve,reject){
+		bdd.query("INSERT INTO ligneTas (idTas,idLpaquet) VALUES (?,?)",[idTas,idLpaquet],function(err,result,fields) {
+			if(err){reject(err);throw err;}{
+				resolve(result);
+			}
+		});
+	});
+}
 function createTas (idSalle,nbrTasMax){
 		return new Promise(function(resolve,reject){
 			var liste = [];

@@ -19,7 +19,7 @@
 		}
 		*/
 		carte.forEach(row => {
-			listeTas[row["idTas"]].push({idCarte :row["idCarte"],image :row["image"]});
+			listeTas[row["idTas"]].push({idCarte :row["idCarte"],image :row["image"], idLpaquet: row["idLpaquet"]});
 		});
 		console.log(listeTas);
 	}
@@ -31,19 +31,30 @@
 		console.log(choix,idCarte);
 		var indexCarte = listeTas[tasActuel].findIndex(x => x.idCarte == idCarte);
 		var tmp = listeTas[tasActuel].splice(indexCarte, 1);
-		console.log("choix: "+choix);
-		console.log("pos: "+ indexCarte);
-
-		console.log("carte tirée :");
-		console.log(tmp[0]);
+		console.log("Information du changement :");
+		console.log(tmp);
+		console.log(choix);
 
 		tmp = tmp[0];
-
+		//On envoie la requet au serveur
+		let data = {idLpaquet:tmp["idLpaquet"],idTas: tasActuel,idTasCible: choix};
+		socket.emit("MoveCardToTas",JSON.stringify(data));
 		//on transfert la carte dans le tas selectionné
 		listeTas[choix].push(tmp);
 		console.log("Nouveau tableau");
 		console.log(listeTas);
 
+		//on reactualise l'affichage
+		afficheTas(tasActuel);
+	}
+	function changementTas2 (choix,idLpaquet,ancienTas){
+		//on cherche la position de la carte selectionee dans le tableau
+		console.log("La Carte"+idLpaquet+"Doit être bougée dans le tas "+choix+"depuis le tas"+ancienTas);
+		var indexCarte = listeTas[ancienTas].findIndex(x => x.idLpaquet == idLpaquet);
+		var tmp = listeTas[ancienTas].splice(indexCarte, 1);
+		tmp = tmp[0];
+		//on transfert la carte dans le tas selectionné
+		listeTas[choix].push(tmp);
 		//on reactualise l'affichage
 		afficheTas(tasActuel);
 	}

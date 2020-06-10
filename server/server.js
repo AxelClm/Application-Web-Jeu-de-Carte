@@ -154,26 +154,47 @@ io.on('connection',function (socket){
 				});
 			});
 		});
+		//PARTIE SPECTATEUR
 		if(session.spectateur == 1){
 			lock.acquire(session.salleJoined,function(release){
 				bdd.getStatut(session.salleJoined).then(function(statut){
 				if(statut == 0){ //La partie n'a pas encore commencé , il n'y a rien a rattrapé
 					socket.emit("statut",0);
 					socket.join("salle"+session.salleJoined);
+					release();
 					}
+				if(statut == 1){//La Partie est en cours
+					socket.emit("statut",1);
+					socket.join("salle"+session.salleJoined);
+					release();
+				}
 				});
-				release();
 			});
 		}
+		//PARTIE JOUEUR
 		else{
 			lock.acquire(session.salleJoined,function(release){ //Peut être inutile pour l'instant 
 				bdd.getJoueur(session.salleJoined).then(function(idJoueur){
 					if(idJoueur == null){
-						bdd.setJoueur(session.salleJoined,session.idUser).then(function(){release()});
-						io.sockets.in("salle"+session.salleJoined).emit('statut',1);
-						socket.emit("statut",1);
-						
-						socket.on("disconnect",function(socket){
+						//Joueur Connecté
+						bdd.setJoueur(session.salleJoined,session.idUser).then(function(){
+							io.sockets.in("salle"+session.salleJoined).emit('statut',1);
+							socket.emit("statut",1);
+							release();
+						});
+						//Input pour bouger une carte
+						socket.on("MoveCardToTas",function(data){
+							lock.acquire(session.salleJoined,function(release){
+								var dataRead = JSON.parse(data);
+								console.log(dataRead);
+								bdd.moveCard(dataRead["idTas"],dataRead["idLpaquet"],dataRead["idTasCible"]).then(function(resolve){
+									io.sockets.in("salle"+session.salleJoined).emit('MoveCardToTas',JSON.stringify(dataRead));
+									release();
+								});
+							});
+							
+						});
+						socket.on("disconnect",function(){
 							lock.acquire(session.salleJoined,function(release){ 
 								console.log("entré");
 								bdd.setJoueur(session.salleJoined,"null").then(function(resolve){
@@ -184,6 +205,7 @@ io.on('connection',function (socket){
 						});
 					}
 					else{
+						//Un joueur est déjà connecté
 						release();
 						socket.emit("erreur",1);
 						socket.emit("console","Un joueur est deja sur le jeu");
