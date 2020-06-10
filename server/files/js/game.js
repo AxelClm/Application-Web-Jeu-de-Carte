@@ -4,7 +4,6 @@ const idSalle = urlcourante.substring (urlcourante.lastIndexOf( "/" )+1 );
 
 var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
 var ligneTasDB = 'none';
-var loaded = 0;
 socket.on("console",function(message){
 	console.log(message);
 });
@@ -21,7 +20,6 @@ socket.on("statut",function(statut){
 	switch (statut){
 		case 0:
 			console.log("statut = 0");
-			loaded = 0;
 			switchWaitingForPlayer();
 			break;
 		case 1:
@@ -38,20 +36,6 @@ socket.on("Tas",function(data){
 socket.on("LigneTas",function(data){
 	ligneTasDB = JSON.parse(data);
 });
-socket.on("MoveCardToTas",function(data){
-	//Dans le cas ou on reçois un input avant que la page soit complétement chargée
-	dataRead = JSON.parse(data);
-	console.log(dataRead);
-	safeMoveCards(dataRead);
-});
-function safeMoveCards(data){
-	var checkloaded = setInterval(function (){
-		if(loaded == 1){
-			changementTas2(data["idTasCible"],data["idLpaquet"],data["idTas"]);
-			clearInterval(checkloaded);
-		}
-	},100);
-}
 function loadGame(){
 	var checkinit = setInterval(function (){
 		if(tasDB != "none" && ligneTasDB != "none"){
@@ -88,9 +72,12 @@ function switchGameMode(){
 		createSideBar(wrapper);
 		createContent(wrapper);
 		createModal(wrapper,7);
+		createModalRenameTas(wrapper);
 	container.innerHTML = "";
 	container.appendChild(wrapper);
 	initmodal();
+	initRenameModal();
+	
 
 }
 function createSideBar(wrapper){
@@ -116,7 +103,18 @@ function createSideBar(wrapper){
 										tas.num = tasDB[i]["idTas"];
 										tas.onclick = function(){console.log(this.num);afficheTas(this.num,this.innerHTML)};
 										tas.innerHTML = tasDB[i]["nom"];
+
+										// ajout bouton qui declenche le modal
+										// qui permet de nommer un tas
+										var btn = document.createElement("button");
+										btn.className = "btn btn-sm btn-dark";
+										btn.setAttribute("type", "button");
+										btn.setAttribute("data-toggle", "modal");
+										btn.setAttribute("data-target", "#modalRename");
+										btn.innerHTML = "Renommer tas";
+
 									liTas.appendChild(tas);
+									liTas.appendChild(btn);
 								tasUL.appendChild(liTas);
 							}
 				li.appendChild(tasUL);
@@ -232,8 +230,81 @@ function initmodal(){
 				});
 			});
 		afficheTas(tasDB[0]["idTas"], tasDB[0]["nom"]);
-		loaded = 1;
       	clearInterval(checkExist);
    		}
 	}, 100);
+}
+
+//------------------------------------------------//
+function createModalRenameTas(wrapper){
+	var modal = document.createElement("div");
+	modal.className = "modal fade";
+	modal.id = "modalRename";
+	modal.setAttribute("tabindex","-1");
+	modal.setAttribute("role","dialog");
+	modal.setAttribute("aria-labelledby","exampleModalLabel");
+	modal.setAttribute("aria-hidden","true");
+		var modalDialog = document.createElement("div");
+		modalDialog.className = "modal-dialog";
+		modalDialog.setAttribute("role", "document");
+			var modalContent = document.createElement("div");
+			modalContent.className = "modal-content";
+				var modalHeader = document.createElement("div");
+				modalHeader.className = "modal-header";
+					var modalTitle = document.createElement("h5");
+					modalTitle.className = "modal-tilte";
+					modalTitle.id = modal.getAttribute("aria-labelledby");
+					modalTitle.innerHTML = "Nommage du tas";
+				modalHeader.appendChild(modalTitle);
+			modalContent.appendChild(modalHeader);
+				var modalBody = document.createElement("div");
+				modalBody.className = "modal-body";
+					var label = document.createElement("label");
+					label.innerHTML = "Nommer le tas :";
+					label.setAttribute("for", "titretas");				
+					var input = document.createElement("input");
+					input.id = "titretas";
+					input.setAttribute("type", "text");
+				modalBody.appendChild(label);
+				modalBody.appendChild(input);
+			modalContent.appendChild(modalBody);
+				var modalFooter = document.createElement("div");
+				modalFooter.className = "modal-footer";
+					var btn = document.createElement("button");
+					btn.setAttribute("type", "button");
+					btn.className ="btn btn-secondary";
+					btn.innerHTML = "Annuler";
+					btn.setAttribute("data-dismiss", "modal");
+					var btn2 = document.createElement("button");
+					btn2.setAttribute("type", "button");
+					btn2.className = "btn btn-primary";
+					btn2.innerHTML = "Valider";
+					btn2.id = "validation";
+				modalFooter.appendChild(btn);
+				modalFooter.appendChild(btn2);
+			modalContent.appendChild(modalFooter);
+		modalDialog.appendChild(modalContent);
+	modal.appendChild(modalDialog);
+	wrapper.appendChild(modal);
+}
+
+function initRenameModal(){
+	$('#modalRename').on('show.bs.modal', function (event) {
+		var modal = $(this);
+		var button = $(event.relatedTarget);
+
+		// on recupere ce qui est ecrit dans le champs de texte
+		$('#validation').unbind().click(function (){
+			var field = $("#titretas").val(); // le contenue du champs de text
+			console.log(field);
+			modal.modal('hide');
+			var precedent = button.prev();
+			// modifie le titre dans html
+			precedent[0].innerText = field;
+
+			// on vide le champ de text
+			$("#titretas").val('');
+		});
+
+	});
 }
