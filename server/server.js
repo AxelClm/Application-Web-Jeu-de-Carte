@@ -142,6 +142,10 @@ io.on('connection',function (socket){
 		socket.disconnect();
 	}
 	else{
+		socket.on("test",function(){
+			socket.emit("console","test");
+			console.log("test");
+		});
 		socket.on("getTas",function(){
 			lock.acquire(session.salleJoined,function(release){
 				bdd.getTas(session.salleJoined).then(function(resolve){
@@ -153,21 +157,22 @@ io.on('connection',function (socket){
 				});
 			});
 		});
+		socket.emit("Spectateur",session.spectateur);
 		//PARTIE SPECTATEUR
 		if(session.spectateur == 1){
 			lock.acquire(session.salleJoined,function(release){
 				bdd.getStatut(session.salleJoined).then(function(statut){
 					console.log("le spectateur rejoins la salle: "+session.salleJoined+" qui a un statut: " +statut);
-				if(statut == 0){ //La partie n'a pas encore commencé , il n'y a rien a rattrapé
-					socket.emit("statut",0);
-					socket.join("salle"+session.salleJoined);
-					release();
+					if(statut == 0){ //La partie n'a pas encore commencé , il n'y a rien a rattrapé
+						socket.emit("statut",0);
+						socket.join("salle"+session.salleJoined);
+						release();
 					}
-				if(statut == 1){//La Partie est en cours
-					socket.emit("statut",1);
-					socket.join("salle"+session.salleJoined);
-					release();
-				}
+					if(statut == 1){//La Partie est en cours
+						socket.emit("statut",1);
+						socket.join("salle"+session.salleJoined);
+						release();
+					}
 				});
 			});
 		}
@@ -200,6 +205,12 @@ io.on('connection',function (socket){
 							var dataRead = JSON.parse(data);
 							//VERIFIER QUE LES INPUTS SONT CORRECTS
 							io.sockets.in("salle"+session.salleJoined).emit('ChangeTas',JSON.stringify(dataRead));
+						});
+						socket.on("carteVisible",function(data){
+							io.sockets.in("salle"+session.salleJoined).emit('carteVisible',data);
+						});
+						socket.on("carteNonVisible",function(data){
+							io.sockets.in("salle"+session.salleJoined).emit('carteNonVisible',data);
 						});
 						socket.on("disconnect",function(){
 							lock.acquire(session.salleJoined,function(release){ 

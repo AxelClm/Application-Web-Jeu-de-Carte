@@ -85,11 +85,14 @@
 		//on commence par 1 car le premier indice contient l'id du tas
 		for (var i = 0; i < listeTas[idTas].length; i++) {
 			var img = document.createElement('img');
-			img.setAttribute("data-toggle","modal");
-			img.setAttribute("data-target","#exampleModal");
+			if(Spectateur == 0){
+				img.setAttribute("data-toggle","modal");
+				img.setAttribute("data-target","#exampleModal");
+			}
 			console.log((listeTas[idTas][i]["image"]+(".png")));
 			img.setAttribute("src","/images/"+(listeTas[idTas][i]["image"]+(".png")));
 			img.setAttribute('id',listeTas[idTas][i]["idCarte"]);
+			img.setAttribute('idLpaquet',listeTas[idTas][i]["idLpaquet"])
 
 			//ajout de marge aux images
 			img.style.marginRight = "10px";
@@ -98,5 +101,18 @@
 			conteneur.appendChild(img);
 		}	
 		$("#contenuImg").fadeIn(200);
+		if(Spectateur == 0){
+			initObserver();
+		}
+	}
+function initObserver(){
+		clearInterval(checkImg);
+		checkImg = setInterval(function (){
+			if($("#contenuImg img").length > 0){
+				$("#contenuImg img").each(function(index,element){
+					Observer.observe(element);
+				});
+			}
+		},100);
 	}
 
