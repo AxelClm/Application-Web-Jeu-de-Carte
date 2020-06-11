@@ -52,6 +52,15 @@ module.exports= {
 			});
 		});
 	},
+	setStatut: function(idSalle,statut){
+		return new Promise(function(resolve,reject){
+			bdd.query("Update Salle set statut = ? where idSalle = ?",[statut,idSalle],function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+	},
 	getJoueur: function(idSalle){
 		return new Promise(function(resolve,reject){
 			bdd.query("SELECT idJoueur FROM salle Where idSalle = "+idSalle+";",function (err,result,fields){

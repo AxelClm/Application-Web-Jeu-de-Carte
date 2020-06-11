@@ -1,7 +1,7 @@
 const socket = io.connect('http://localhost:8080');
 const urlcourante = document.location.href; 
 const idSalle = urlcourante.substring (urlcourante.lastIndexOf( "/" )+1 );
-
+var Spectateur;
 var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
 var ligneTasDB = 'none';
 var loaded = 0;
@@ -30,6 +30,10 @@ socket.on("statut",function(statut){
 			break;
 		
 	}
+});
+socket.on("ChangeTas",function(data){
+	let dataP = JSON.parse(data);
+	afficheTas(dataP["idTas"],dataP["nom"]);
 });
 socket.on("Tas",function(data){
 	tasDB = JSON.parse(data);

@@ -73,6 +73,8 @@
 		while(conteneur.hasChildNodes()){
 			conteneur.removeChild(conteneur.lastChild);
 		}
+		var data = {idTas: idTas,nom : nom}
+		socket.emit("afficheTas",JSON.stringify(data));
 		//On change l'affichage
 		$("#nomTas").html(nom);
 		$("#capacitéTas").html(listeTas[idTas].length);
