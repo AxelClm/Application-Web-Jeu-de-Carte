@@ -5,6 +5,7 @@ const idSalle = urlcourante.substring (urlcourante.lastIndexOf( "/" )+1 );
 var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
 var ligneTasDB = 'none';
 var tabTitre = {};
+var tabFavorite = {};
 
 
 socket.on("console",function(message){
@@ -130,8 +131,10 @@ function createSideBar(wrapper){
 											$("img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
 											$("img").click(function(event){
 												console.log($(this).attr('id'));
+												var idCarte = $(this).attr('id');
+												idCarte = idCarte.slice(0, -1); 
+												setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 3000); //réactivation du modal
 											});
-											$("img").attr("data-toggle", "modal"); //réactivation du modal
 										};
 
 									liTas.appendChild(tas);
@@ -341,6 +344,7 @@ function initRenameModal(){
 function initTabTitre(){
 	for(var i = 0; i < tasDB.length; i++){
 		tabTitre[tasDB[i]["idTas"]] = null;
+		tabFavorite[tasDB[i]["idTas"]] = null;
 	}
 	console.log(tabTitre);
 } 
