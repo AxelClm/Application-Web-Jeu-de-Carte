@@ -1,12 +1,14 @@
 const socket = io.connect('http://localhost:8080');
 const urlcourante = document.location.href; 
 const idSalle = urlcourante.substring (urlcourante.lastIndexOf( "/" )+1 );
-
+var Spectateur ="none";
 var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
 var ligneTasDB = 'none';
 var tabTitre = {};
 var tabFavorite = {};
 var loaded = 0;
+var Observer;
+var checkImg;
 
 socket.on("console",function(message){
 	console.log(message);
@@ -19,7 +21,34 @@ socket.on("erreur",function(errorCode){
 		break;
 	}
 });
-
+socket.on("Spectateur",function(data){
+	Spectateur=data;
+	if(Spectateur == 0){
+		Observer = new IntersectionObserver( 
+			entries => {
+				entries.forEach(ent => {
+					if(ent.isIntersecting == true){
+						window.requestIdleCallback(function(){socket.emit("carteVisible",ent.target.getAttribute("idLpaquet"))});
+					}
+					else{
+						window.requestIdleCallback(function(){socket.emit("carteNonVisible",ent.target.getAttribute("idLpaquet"))});
+					}
+				});
+			}, 
+			options = {
+  				root: document.querySelector('#content'),
+  				rootMargin: '0px',
+  				threshold: 1.0
+			}
+		);
+	}
+});
+socket.on("carteVisible",function(data){
+	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="red";}});
+});
+socket.on("carteNonVisible",function(data){
+	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="black";}});
+});
 socket.on("statut",function(statut){
 	switch (statut){
 		case 0:
@@ -33,6 +62,10 @@ socket.on("statut",function(statut){
 			break;
 		
 	}
+});
+socket.on("ChangeTas",function(data){
+	let dataP = JSON.parse(data);
+	afficheTas(dataP["idTas"],dataP["nom"]);
 });
 socket.on("Tas",function(data){
 	tasDB = JSON.parse(data);
@@ -57,7 +90,8 @@ function safeMoveCards(data){
 }
 function loadGame(){
 	var checkinit = setInterval(function (){
-		if(tasDB != "none" && ligneTasDB != "none"){
+		console.log(Spectateur);
+		if(tasDB != "none" && ligneTasDB != "none" && Spectateur !="none"){
 			initTas(tasDB,ligneTasDB);
 			console.log(tasDB);
 			console.log(ligneTasDB);
