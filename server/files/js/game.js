@@ -128,12 +128,16 @@ function createSideBar(wrapper){
 										btn2.onclick = function() {
 											console.log(this.id);
 											console.log("veuillez choisir votre carte favorite");
-											$("img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
-											$("img").click(function(event){
+											$("#contenuImg img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
+											$("#contenuImg img").click(function(event){
 												console.log($(this).attr('id'));
 												var idCarte = $(this).attr('id');
-												idCarte = idCarte.slice(0, -1); 
-												setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 3000); //réactivation du modal
+												idCarte = idCarte.slice(0, -1);
+												$(this).css("border-color","blue");
+												$("#contenuImg img").each(function(index,element){
+													$(element).unbind('click');
+												});
+												setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 100); //réactivation du modal
 											});
 										};
 
