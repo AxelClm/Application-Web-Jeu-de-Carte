@@ -6,7 +6,7 @@ var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
 var ligneTasDB = 'none';
 var tabTitre = {};
 var tabFavorite = {};
-
+var loaded = 0;
 
 socket.on("console",function(message){
 	console.log(message);
@@ -24,6 +24,7 @@ socket.on("statut",function(statut){
 	switch (statut){
 		case 0:
 			console.log("statut = 0");
+			loaded = 0;
 			switchWaitingForPlayer();
 			break;
 		case 1:
@@ -40,6 +41,20 @@ socket.on("Tas",function(data){
 socket.on("LigneTas",function(data){
 	ligneTasDB = JSON.parse(data);
 });
+socket.on("MoveCardToTas",function(data){
+	//Dans le cas ou on reçois un input avant que la page soit complétement chargée
+	dataRead = JSON.parse(data);
+	console.log(dataRead);
+	safeMoveCards(dataRead);
+});
+function safeMoveCards(data){
+	var checkloaded = setInterval(function (){
+		if(loaded == 1){
+			changementTas2(data["idTasCible"],data["idLpaquet"],data["idTas"]);
+			clearInterval(checkloaded);
+		}
+	},100);
+}
 function loadGame(){
 	var checkinit = setInterval(function (){
 		if(tasDB != "none" && ligneTasDB != "none"){
@@ -81,7 +96,8 @@ function switchGameMode(){
 	container.appendChild(wrapper);
 	initmodal();
 	initRenameModal();
-	initTabTitre();
+	initTabTitre();	
+
 	
 
 }
@@ -259,6 +275,8 @@ function initmodal(){
 				});
 			});
 		afficheTas(tasDB[0]["idTas"], tasDB[0]["nom"]);
+		loaded = 1;
+		initRenameModal();
       	clearInterval(checkExist);
    		}
 	}, 100);
