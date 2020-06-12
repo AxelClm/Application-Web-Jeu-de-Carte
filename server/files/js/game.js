@@ -70,7 +70,9 @@ socket.on("ChangeTas",function(data){
 socket.on("Tas",function(data){
 	tasDB = JSON.parse(data);
 });
-
+socket.on("favoriteCard",function(data)){
+	
+}
 socket.on("LigneTas",function(data){
 	ligneTasDB = JSON.parse(data);
 });
@@ -182,6 +184,7 @@ function createSideBar(wrapper){
 											$("#contenuImg img").click(function(event){
 												console.log($(this).attr('id'));
 												var idCarte = $(this).attr('id');
+												socket.emit("favoriteCard",$(this.attr("idLpaquet")));
 												idCarte = idCarte.slice(0, -1);
 												$(this).css("border-color","blue");
 												$("#contenuImg img").each(function(index,element){
