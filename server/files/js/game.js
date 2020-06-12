@@ -4,9 +4,12 @@ const idSalle = urlcourante.substring (urlcourante.lastIndexOf( "/" )+1 );
 var Spectateur ="none";
 var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
 var ligneTasDB = 'none';
+var tabTitre = {};
+var tabFavorite = {};
 var loaded = 0;
 var Observer;
 var checkImg;
+
 socket.on("console",function(message){
 	console.log(message);
 });
@@ -126,7 +129,9 @@ function switchGameMode(){
 	container.innerHTML = "";
 	container.appendChild(wrapper);
 	initmodal();
-	
+	initRenameModal();
+	initTabTitre();	
+
 	
 
 }
@@ -162,9 +167,33 @@ function createSideBar(wrapper){
 										btn.setAttribute("data-toggle", "modal");
 										btn.setAttribute("data-target", "#modalRename");
 										btn.innerHTML = "Renommer tas";
+										btn.id = tasDB[i]["idTas"];
+
+										// bouton qui sert a choisir la carte favorite du tas
+										var btn2 = document.createElement("button");
+										btn2.id = tasDB[i]["idTas"];
+										btn2.setAttribute("type", "button");
+										btn2.innerHTML = "choisir carte favorite";
+										btn2.id = tasDB[i]["idTas"]+"b";
+										btn2.onclick = function() {
+											console.log(this.id);
+											console.log("veuillez choisir votre carte favorite");
+											$("#contenuImg img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
+											$("#contenuImg img").click(function(event){
+												console.log($(this).attr('id'));
+												var idCarte = $(this).attr('id');
+												idCarte = idCarte.slice(0, -1);
+												$(this).css("border-color","blue");
+												$("#contenuImg img").each(function(index,element){
+													$(element).unbind('click');
+												});
+												setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 100); //réactivation du modal
+											});
+										};
 
 									liTas.appendChild(tas);
 									liTas.appendChild(btn);
+									liTas.appendChild(btn2);
 								tasUL.appendChild(liTas);
 							}
 				li.appendChild(tasUL);
@@ -353,10 +382,25 @@ function initRenameModal(){
 			var precedent = button.prev();
 			// modifie le titre dans html
 			precedent[0].innerText = field;
+			console.log($(button).attr('id'));
+
+			//on met a jour le tableau contenant la liste des noms
+			//donnés au tas par le joueur
+			tabTitre[$(button).attr('id')] = field;
 
 			// on vide le champ de text
 			$("#titretas").val('');
+			console.log(tabTitre);
 		});
-
 	});
 }
+
+// initialisation du tableau qui contient les noms
+// donnés au tas par le joueur
+function initTabTitre(){
+	for(var i = 0; i < tasDB.length; i++){
+		tabTitre[tasDB[i]["idTas"]] = null;
+		tabFavorite[tasDB[i]["idTas"]] = null;
+	}
+	console.log(tabTitre);
+} 
