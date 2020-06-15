@@ -164,46 +164,10 @@ function createSideBar(wrapper){
 								let liTas = document.createElement("li");
 										let tas = document.createElement("a");
 										tas.num = tasDB[i]["idTas"];
+										tas.id = tasDB[i]["idTas"];
 										tas.onclick = function(){console.log(this.num);afficheTas(this.num,this.innerHTML)};
 										tas.innerHTML = tasDB[i]["nom"];
-
-										// ajout bouton qui declenche le modal
-										// qui permet de nommer un tas
-										var btn = document.createElement("button");
-										btn.className = "btn btn-sm btn-dark";
-										btn.setAttribute("type", "button");
-										btn.setAttribute("data-toggle", "modal");
-										btn.setAttribute("data-target", "#modalRename");
-										btn.innerHTML = "Renommer tas";
-										btn.id = tasDB[i]["idTas"];
-
-										// bouton qui sert a choisir la carte favorite du tas
-										var btn2 = document.createElement("button");
-										btn2.id = tasDB[i]["idTas"];
-										btn2.setAttribute("type", "button");
-										btn2.innerHTML = "choisir carte favorite";
-										btn2.id = tasDB[i]["idTas"]+"b";
-										btn2.onclick = function() {
-											console.log(this.id);
-											console.log("veuillez choisir votre carte favorite");
-											$("#contenuImg img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
-											$("#contenuImg img").click(function(event){
-												console.log($(this).attr('id'));
-												var idCarte = $(this).attr('id');
-												var idLPaquet = $(this).attr("idLpaquet");
-												socket.emit("favoriteCard",JSON.stringify({idLPaquet: idLPaquet, idTas : tasActuel}));
-												idCarte = idCarte.slice(0, -1);
-												$(this).css("border-color","blue");
-												$("#contenuImg img").each(function(index,element){
-													$(element).unbind('click');
-												});
-												setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 100); //réactivation du modal
-											});
-										};
-
 									liTas.appendChild(tas);
-									liTas.appendChild(btn);
-									liTas.appendChild(btn2);
 								tasUL.appendChild(liTas);
 							}
 				li.appendChild(tasUL);
@@ -237,6 +201,9 @@ function createContent(wrapper){
 				container.appendChild(div2);
 			nav.appendChild(container);
 		content.appendChild(nav);
+
+	initButton(content);
+
 		let contenuImg = document.createElement("div");
 			contenuImg.id="contenuImg";
 		content.appendChild(contenuImg);
@@ -386,17 +353,20 @@ function initRenameModal(){
 
 		// on recupere ce qui est ecrit dans le champs de texte
 		$('#validation').unbind().click(function (){
+			currTas = getCurrTas();
 			var field = $("#titretas").val(); // le contenue du champs de text
 			console.log(field);
 			modal.modal('hide');
-			var precedent = button.prev();
-			// modifie le titre dans html
-			precedent[0].innerText = field;
-			var idTas = $(button).attr('id');
+      socket.emit("renommerTas",JSON.stringify({idTas: currTas, nNom : field}));
 			//on met a jour le tableau contenant la liste des noms
 			//donnés au tas par le joueur
-			tabTitre[idTas] = field;
-			socket.emit("renommerTas",JSON.stringify({idTas: idTas, nNom : field}));
+			tabTitre[currTas] = field;
+
+			// modifie le titre dans html
+			$("#nomTas").text(field);
+
+			// modifie le titre du tas dans la sidebar
+			$('#'+currTas).text(field);
 			// on vide le champ de text
 			$("#titretas").val('');
 			console.log(tabTitre);
@@ -412,4 +382,50 @@ function initTabTitre(){
 		tabFavorite[tasDB[i]["idTas"]] = null;
 	}
 	console.log(tabTitre);
-} 
+}
+
+//Méthode qui crée boutons choix carte favorite et
+//modification du titre du tas
+function initButton(container){
+	let currTas = getCurrTas();
+
+	// div contenant les boutons
+	let contentBtn = document.createElement("div");
+	contentBtn.id = "divBtn";
+	contentBtn.style.marginBottom = "20px";
+
+		// Bouton de rennommage de tas 
+		let btn = document.createElement("button");
+		btn.setAttribute("type","button");
+		btn.setAttribute("data-toggle", "modal");
+		btn.setAttribute("data-target", "#modalRename");
+		btn.className = "btn btn-info"
+		btn.innerHTML = "Renommer le tas";
+		btn.style.marginRight = "10px";
+
+		// Bouton choix carte favorite
+		let btn2 = document.createElement("button");
+		btn2.setAttribute("type","button");
+		btn2.className = "btn btn-info";
+		btn2.innerHTML= "Choisir une carte favorite";
+		btn2.onclick = function() {
+			console.log(this.id);
+			console.log("veuillez choisir votre carte favorite");
+			$("#contenuImg img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
+			$("#contenuImg img").click(function(event){
+				console.log($(this).attr('id'));
+				var idCarte = $(this).attr('id');
+				idCarte = idCarte.slice(0, -1);
+				$("#contenuImg img").css("border-color","#f8f9fa");
+				$(this).css("border-color","blue");
+				$("#contenuImg img").each(function(index,element){
+					$(element).unbind('click');
+				});
+				setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 100); //réactivation du modal
+			});
+		};
+
+	contentBtn.appendChild(btn);
+	contentBtn.appendChild(btn2);
+	container.appendChild(contentBtn);
+}
