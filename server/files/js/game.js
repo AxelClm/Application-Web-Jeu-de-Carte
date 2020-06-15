@@ -2,7 +2,7 @@ const socket = io.connect('http://localhost:8080');
 const urlcourante = document.location.href; 
 const idSalle = urlcourante.substring (urlcourante.lastIndexOf( "/" )+1 );
 var Spectateur ="none";
-var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
+var tasDB= 'none';
 var ligneTasDB = 'none';
 var tabTitre = {};
 var tabFavorite = {};
@@ -70,7 +70,15 @@ socket.on("ChangeTas",function(data){
 socket.on("Tas",function(data){
 	tasDB = JSON.parse(data);
 });
-
+socket.on("renameTas",function(data){
+	tasDB ="none";
+	ligneTasDB="none";
+	socket.emit("getTas",true);
+	loadGame();
+});
+socket.on("favoriteCard",function(data){
+	
+});
 socket.on("LigneTas",function(data){
 	ligneTasDB = JSON.parse(data);
 });
@@ -159,8 +167,6 @@ function createSideBar(wrapper){
 										tas.id = tasDB[i]["idTas"];
 										tas.onclick = function(){console.log(this.num);afficheTas(this.num,this.innerHTML)};
 										tas.innerHTML = tasDB[i]["nom"];
-
-
 									liTas.appendChild(tas);
 								tasUL.appendChild(liTas);
 							}
@@ -351,7 +357,7 @@ function initRenameModal(){
 			var field = $("#titretas").val(); // le contenue du champs de text
 			console.log(field);
 			modal.modal('hide');
-
+      socket.emit("renommerTas",JSON.stringify({idTas: currTas, nNom : field}));
 			//on met a jour le tableau contenant la liste des noms
 			//donnés au tas par le joueur
 			tabTitre[currTas] = field;
@@ -361,7 +367,6 @@ function initRenameModal(){
 
 			// modifie le titre du tas dans la sidebar
 			$('#'+currTas).text(field);
-
 			// on vide le champ de text
 			$("#titretas").val('');
 			console.log(tabTitre);
