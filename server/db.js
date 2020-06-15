@@ -118,6 +118,24 @@ module.exports= {
 				}
 			});
 		});
+	},
+	renameTas : function(idTas,idSalle,nNom){
+		return new Promise(function(resolve,reject){
+			bdd.query("Update Tas set nom = ? Where idSalle = ? and idTas = ?",[nNom,idSalle,idTas],function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+	},
+	setFavoriteCard : function(idTas,idLPaquet,idSalle){
+		return new Promise(function(resolve,reject){
+			bdd.query("Update Tas set idLTFavorite = ? Where idSalle = ? and idTas = ?",[idLPaquet,idSalle,idTas],function(err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
 	}
 };
 function deleteLTas(idTas,idLpaquet){

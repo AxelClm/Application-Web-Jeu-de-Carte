@@ -2,7 +2,7 @@ const socket = io.connect('http://localhost:8080');
 const urlcourante = document.location.href; 
 const idSalle = urlcourante.substring (urlcourante.lastIndexOf( "/" )+1 );
 var Spectateur ="none";
-var tasDB= '[{"idTas":136,"nom":"Tas n°0"},{"idTas":137,"nom":"Tas n°1"}]';
+var tasDB= 'none';
 var ligneTasDB = 'none';
 var tabTitre = {};
 var tabFavorite = {};
@@ -70,9 +70,15 @@ socket.on("ChangeTas",function(data){
 socket.on("Tas",function(data){
 	tasDB = JSON.parse(data);
 });
-socket.on("favoriteCard",function(data)){
+socket.on("renameTas",function(data){
+	tasDB ="none";
+	ligneTasDB="none";
+	socket.emit("getTas",true);
+	loadGame();
+});
+socket.on("favoriteCard",function(data){
 	
-}
+});
 socket.on("LigneTas",function(data){
 	ligneTasDB = JSON.parse(data);
 });
@@ -184,7 +190,8 @@ function createSideBar(wrapper){
 											$("#contenuImg img").click(function(event){
 												console.log($(this).attr('id'));
 												var idCarte = $(this).attr('id');
-												socket.emit("favoriteCard",$(this.attr("idLpaquet")));
+												var idLPaquet = $(this).attr("idLpaquet");
+												socket.emit("favoriteCard",JSON.stringify({idLPaquet: idLPaquet, idTas : tasActuel}));
 												idCarte = idCarte.slice(0, -1);
 												$(this).css("border-color","blue");
 												$("#contenuImg img").each(function(index,element){
@@ -385,12 +392,11 @@ function initRenameModal(){
 			var precedent = button.prev();
 			// modifie le titre dans html
 			precedent[0].innerText = field;
-			console.log($(button).attr('id'));
-
+			var idTas = $(button).attr('id');
 			//on met a jour le tableau contenant la liste des noms
 			//donnés au tas par le joueur
-			tabTitre[$(button).attr('id')] = field;
-
+			tabTitre[idTas] = field;
+			socket.emit("renommerTas",JSON.stringify({idTas: idTas, nNom : field}));
 			// on vide le champ de text
 			$("#titretas").val('');
 			console.log(tabTitre);

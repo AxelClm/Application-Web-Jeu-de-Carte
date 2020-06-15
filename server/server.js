@@ -201,6 +201,16 @@ io.on('connection',function (socket){
 							});
 							
 						});
+						socket.on("renommerTas",function(data){
+							var dataRead = JSON.parse(data);
+							console.log(dataRead)
+							lock.acquire(session.salleJoined,function(release){
+								bdd.renameTas(dataRead["idTas"],session.salleJoined,dataRead["nNom"]).then(function(resolve){
+									io.sockets.in("salle"+session.salleJoined).emit('renameTas',JSON.stringify(dataRead));
+									release();
+								});
+							});
+						});
 						socket.on("afficheTas",function(data){
 							var dataRead = JSON.parse(data);
 							//VERIFIER QUE LES INPUTS SONT CORRECTS
