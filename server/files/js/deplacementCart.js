@@ -116,3 +116,6 @@ function initObserver(){
 		},100);
 	}
 
+function getCurrTas(){
+	return tasActuel;
+}
