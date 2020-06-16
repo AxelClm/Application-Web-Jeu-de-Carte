@@ -71,13 +71,16 @@ socket.on("Tas",function(data){
 	tasDB = JSON.parse(data);
 });
 socket.on("renameTas",function(data){
-	tasDB ="none";
-	ligneTasDB="none";
-	socket.emit("getTas",true);
-	loadGame();
+	let dataRead = JSON.parse(data);
+	let currTas = getCurrTas();
+	tabTitre[dataRead["idTas"]] = dataRead["nNom"];
+	$('#'+dataRead["idTas"]).text(dataRead["nNom"]);
+	afficheTas(currTas,$("#"+currTas).html());
 });
-socket.on("favoriteCard",function(data){
-	
+socket.on("favorite",function(data){
+	let dataRead = JSON.parse(data);
+	tasDB[tasDB.findIndex(x => x.idTas == dataRead["idTas"])].idLTFavorite = dataRead["idLPaquet"];
+	afficheTas(tasActuel,$("#"+tasActuel).html());
 });
 socket.on("LigneTas",function(data){
 	ligneTasDB = JSON.parse(data);
@@ -357,7 +360,7 @@ function initRenameModal(){
 			var field = $("#titretas").val(); // le contenue du champs de text
 			console.log(field);
 			modal.modal('hide');
-      socket.emit("renommerTas",JSON.stringify({idTas: currTas, nNom : field}));
+      		socket.emit("renommerTas",JSON.stringify({idTas: currTas, nNom : field}));
 			//on met a jour le tableau contenant la liste des noms
 			//donnés au tas par le joueur
 			tabTitre[currTas] = field;
@@ -413,11 +416,12 @@ function initButton(container){
 			console.log("veuillez choisir votre carte favorite");
 			$("#contenuImg img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
 			$("#contenuImg img").click(function(event){
-				console.log($(this).attr('id'));
-				var idCarte = $(this).attr('id');
-				idCarte = idCarte.slice(0, -1);
-				$("#contenuImg img").css("border-color","#f8f9fa");
-				$(this).css("border-color","blue");
+				var idLPaquet = $(this).attr('idLPaquet');
+				tasDB[tasDB.findIndex(x => x.idTas == tasActuel)].idLTFavorite = idLPaquet;
+				console.log(tasDB)
+				$("#contenuImg img").removeClass("fav");
+				$(this).addClass("fav");
+				socket.emit("favorite",JSON.stringify({idTas: tasActuel, idLPaquet: idLPaquet}));
 				$("#contenuImg img").each(function(index,element){
 					$(element).unbind('click');
 				});

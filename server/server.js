@@ -211,6 +211,16 @@ io.on('connection',function (socket){
 								});
 							});
 						});
+						socket.on("favorite",function(data){
+							var dataRead = JSON.parse(data);
+							console.log(dataRead);
+							lock.acquire(session.salleJoined,function(release){
+								bdd.setFavoriteCard(dataRead["idTas"],session.salleJoined,dataRead["idLPaquet"]).then(function(resolve){
+									io.sockets.in("salle"+session.salleJoined).emit('favorite',JSON.stringify(dataRead));
+									release();
+								});
+							});
+						});
 						socket.on("afficheTas",function(data){
 							var dataRead = JSON.parse(data);
 							//VERIFIER QUE LES INPUTS SONT CORRECTS

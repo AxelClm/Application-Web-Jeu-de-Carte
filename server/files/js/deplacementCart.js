@@ -80,6 +80,8 @@
 		$("#capacitéTas").html(listeTas[idTas].length);
 		console.log(listeTas);
 		console.log(listeTas[idTas]);
+		idFavorite = tasDB[tasDB.findIndex(x => x.idTas == idTas)].idLTFavorite;
+		console.log("idFavorite: "+idFavorite);
 		//on ajoute les images a la balise <div> avec le classe image
 		//on ajoute les images dans la balise <div id="contenuImg">
 		//on commence par 1 car le premier indice contient l'id du tas
@@ -97,7 +99,9 @@
 			//ajout de marge aux images
 			img.style.marginRight = "10px";
 			img.style.marginBottom = "10px";
-
+			if(listeTas[idTas][i]["idLpaquet"] == idFavorite){
+				img.classList.add("fav");
+			}
 			conteneur.appendChild(img);
 		}	
 		$("#contenuImg").fadeIn(200);
