@@ -146,6 +146,10 @@ img{
     border-width: thin;
     border-color: #f8f9fa;
 }
+.fav{
+    border-color: blue;
+    border-width: medium;
+}
 /* ---------------------------------------------------
     MEDIAQUERIES
 ----------------------------------------------------- */

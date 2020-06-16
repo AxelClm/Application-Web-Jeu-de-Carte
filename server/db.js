@@ -91,7 +91,7 @@ module.exports= {
 	},
 	getTas: function(idSalle){
 		return new Promise(function(resolve,reject){
-			bdd.query("SELECT idTas,nom from Tas where idSalle = ?",idSalle,function (err,result,fields){
+			bdd.query("SELECT idTas,nom,idLTFavorite from Tas where idSalle = ?",idSalle,function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
