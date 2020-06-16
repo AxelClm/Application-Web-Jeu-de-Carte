@@ -1,6 +1,30 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var multer = require("multer");
+var multerConf = {
+	storage : multer.diskStorage({
+		destination : function(req,file,next){
+			next(null,'./files/images');
+		},
+		filename : function(req,file,next){
+			const ext = file.mimetype.split('/')[1];
+			next(null,Date.now() + '.' + ext);
+		}
+	}),
+	FileFilter: function(req,file,next){
+		if(!file){
+			next();
+		}
+		const image = file.mimetype.startsWith('image/');
+		if(image){
+			next(null,true);
+		}else{
+			console.log("Le type du fichier n'est pas supporté");
+			next({message:"Le type du fichier n'est pas une image"});
+		}
+	}
+};
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 var ent = require('ent');
 var session = require("express-session")({
@@ -123,7 +147,16 @@ app.get("/game/:idSalle",function(req,res){
 		}
 	}
 });
-
+app.get('/paquet',function(req,res){
+	res.render('paquet.ejs');
+});
+app.post('/paquet/upload',multer(multerConf).single('photo'),function(req,res){
+	console.log(req.file);
+	if(file){
+		var name = file.filename;
+		res.render('paquet.ejs');
+	}
+});
 /* Si la page n'est pas trouvée*/
 
 app.use(function(req,res,next){
