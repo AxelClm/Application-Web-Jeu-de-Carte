@@ -108,6 +108,19 @@
 		if(Spectateur == 0){
 			initObserver();
 		}
+		
+		let element = document.getElementById("choixFav");
+
+		// on ajoute le bouton pour choisir une carte favorite
+		if (tas0isEmpty()) {
+			if(element === null){ //afin de ne pas créer plusieurs boutons lors du
+				initButton2();   // changement de tas
+			}
+		// on supprime le bouton si le tas0 (initial) contient une carte
+		}else if (!tas0isEmpty() && (element != null)){
+			element.remove();
+			console.log("chien");
+		}
 	}
 function initObserver(){
 		clearInterval(checkImg);
@@ -122,4 +135,11 @@ function initObserver(){
 
 function getCurrTas(){
 	return tasActuel;
+}
+
+// Methode qui indique si le tas 0 (initial) est vide
+function tas0isEmpty(){
+	var firstIdTas = Object.keys(listeTas)[0];
+
+	return ((listeTas[firstIdTas].length === 0) ? true : false);
 }

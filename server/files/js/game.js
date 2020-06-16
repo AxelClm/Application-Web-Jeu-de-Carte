@@ -406,30 +406,37 @@ function initButton(container){
 		btn.innerHTML = "Renommer le tas";
 		btn.style.marginRight = "10px";
 
-		// Bouton choix carte favorite
-		let btn2 = document.createElement("button");
-		btn2.setAttribute("type","button");
-		btn2.className = "btn btn-info";
-		btn2.innerHTML= "Choisir une carte favorite";
-		btn2.onclick = function() {
-			console.log(this.id);
-			console.log("veuillez choisir votre carte favorite");
-			$("#contenuImg img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
-			$("#contenuImg img").click(function(event){
-				var idLPaquet = $(this).attr('idLPaquet');
-				tasDB[tasDB.findIndex(x => x.idTas == tasActuel)].idLTFavorite = idLPaquet;
-				console.log(tasDB)
-				$("#contenuImg img").removeClass("fav");
-				$(this).addClass("fav");
-				socket.emit("favorite",JSON.stringify({idTas: tasActuel, idLPaquet: idLPaquet}));
-				$("#contenuImg img").each(function(index,element){
-					$(element).unbind('click');
-				});
-				setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 100); //réactivation du modal
-			});
-		};
-
 	contentBtn.appendChild(btn);
-	contentBtn.appendChild(btn2);
+	
 	container.appendChild(contentBtn);
+}
+
+
+function initButton2(){
+	let div = document.getElementById('divBtn');
+
+	// ajout du bouton choix carte favorite
+	let btn2 = document.createElement("button");
+	btn2.setAttribute("type","button");
+	btn2.className = "btn btn-info";
+	btn2.innerHTML= "Choisir une carte favorite";
+	btn2.id = "choixFav";
+	btn2.onclick = function() {
+		console.log("veuillez choisir votre carte favorite");
+		$("#contenuImg img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
+		$("#contenuImg img").click(function(event){
+			console.log($(this).attr('id'));
+			var idCarte = $(this).attr('id');
+      var idLPaquet = $(this).attr('idLPaquet');
+			tasDB[tasDB.findIndex(x => x.idTas == tasActuel)].idLTFavorite = idLPaquet;
+			$("#contenuImg img").removeClass("fav");
+			$(this).addClass("fav");
+      socket.emit("favorite",JSON.stringify({idTas: tasActuel, idLPaquet: idLPaquet}));
+			$("#contenuImg img").each(function(index,element){
+				$(element).unbind('click');
+			});
+			setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 100); //réactivation du modal
+		});
+	};
+	div.appendChild(btn2);
 }
