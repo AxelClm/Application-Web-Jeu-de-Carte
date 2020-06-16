@@ -108,18 +108,22 @@
 		if(Spectateur == 0){
 			initObserver();
 		}
-		
-		let element = document.getElementById("choixFav");
 
-		// on ajoute le bouton pour choisir une carte favorite
-		if (tas0isEmpty()) {
-			if(element === null){ //afin de ne pas créer plusieurs boutons lors du
-				initButton2();   // changement de tas
+		
+		let btnFav = document.getElementById("choixFav");
+		let btnRename = document.getElementById("renameCard");
+
+		if(tasActuel != Object.keys(listeTas)[0]){ // on n'affiche pas les boutons sur le tas initial (tas0)
+			// on ajoute les boutons
+			if (tas0isEmpty()) {
+				if((btnFav === null) && (btnRename === null)){ // afin de ne pas créer plusieurs boutons lors du
+					initButton();   						   // changement de tas
+				}
+			// on supprime les boutons si le tas0 (initial) contient une carte
+			}else if (!tas0isEmpty() && (btnFav != null) && (btnRename != null) ){
+				btnFav.remove();
+				btnRename.remove();
 			}
-		// on supprime le bouton si le tas0 (initial) contient une carte
-		}else if (!tas0isEmpty() && (element != null)){
-			element.remove();
-			console.log("chien");
 		}
 	}
 function initObserver(){
