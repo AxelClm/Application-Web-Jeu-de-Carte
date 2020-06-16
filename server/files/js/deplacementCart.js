@@ -112,17 +112,20 @@
 		
 		let btnFav = document.getElementById("choixFav");
 		let btnRename = document.getElementById("renameCard");
+		let btnEnd = document.getElementById("end");
 
 		if(tasActuel != Object.keys(listeTas)[0]){ // on n'affiche pas les boutons sur le tas initial (tas0)
 			// on ajoute les boutons
 			if (tas0isEmpty()) {
-				if((btnFav === null) && (btnRename === null)){ // afin de ne pas créer plusieurs boutons lors du
+				if((btnFav === null) && (btnRename === null) && (btnEnd === null)){ // afin de ne pas créer plusieurs boutons lors du
 					initButton();   						   // changement de tas
+					initEndBtn();
 				}
 			// on supprime les boutons si le tas0 (initial) contient une carte
-			}else if (!tas0isEmpty() && (btnFav != null) && (btnRename != null) ){
+			}else if (!tas0isEmpty() && (btnFav != null) && (btnRename != null) && (btnEnd != null)){
 				btnFav.remove();
 				btnRename.remove();
+				btnEnd.remove();
 			}
 		}
 	}

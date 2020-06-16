@@ -438,3 +438,18 @@ function initButton(){
 	contentBtn.appendChild(btn2);
 }
 
+function initEndBtn(){
+	let ul = document.getElementById('tasSubMenu');
+
+	console.log("ouf");
+
+	let btn = document.createElement('button');
+	btn.setAttribute("type","button");
+	btn.className = "btn btn-success btn-sm";
+	btn.id = "end";
+	btn.innerHTML = "J'ai fini !";
+	btn.style.marginLeft = "15px";
+
+	//ajout du bouton dans la sidebar
+	ul.appendChild(btn);
+}
