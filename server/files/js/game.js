@@ -441,8 +441,6 @@ function initButton(){
 function initEndBtn(){
 	let ul = document.getElementById('tasSubMenu');
 
-	console.log("ouf");
-
 	let btn = document.createElement('button');
 	btn.setAttribute("type","button");
 	btn.className = "btn btn-success btn-sm";

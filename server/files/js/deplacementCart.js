@@ -109,25 +109,7 @@
 			initObserver();
 		}
 
-		
-		let btnFav = document.getElementById("choixFav");
-		let btnRename = document.getElementById("renameCard");
-		let btnEnd = document.getElementById("end");
-
-		if(tasActuel != Object.keys(listeTas)[0]){ // on n'affiche pas les boutons sur le tas initial (tas0)
-			// on ajoute les boutons
-			if (tas0isEmpty()) {
-				if((btnFav === null) && (btnRename === null) && (btnEnd === null)){ // afin de ne pas créer plusieurs boutons lors du
-					initButton();   						   // changement de tas
-					initEndBtn();
-				}
-			// on supprime les boutons si le tas0 (initial) contient une carte
-			}else if (!tas0isEmpty() && (btnFav != null) && (btnRename != null) && (btnEnd != null)){
-				btnFav.remove();
-				btnRename.remove();
-				btnEnd.remove();
-			}
-		}
+		displayBtn();
 	}
 function initObserver(){
 		clearInterval(checkImg);
@@ -149,4 +131,29 @@ function tas0isEmpty(){
 	var firstIdTas = Object.keys(listeTas)[0];
 
 	return ((listeTas[firstIdTas].length === 0) ? true : false);
+}
+
+// fonction qui détermine si les boutons doivent être affichés
+function displayBtn(){
+	let btnFav = document.getElementById("choixFav");
+	let btnRename = document.getElementById("renameCard");
+	let btnEnd = document.getElementById("end");
+
+	if(tas0isEmpty()){ // si le tas initial est vide
+		if(btnEnd === null) initEndBtn(); // on verifie si le bouton de fin n'est pas sur la page avant de le créer
+
+		if (tasActuel == Object.keys(listeTas)[0]) {// si le joeur se trouve dans le tas intial on efface les boutons 
+													// seulement s'ils y sont
+			if ((btnFav != null) && (btnRename != null)) {
+				btnRename.remove();
+				btnFav.remove();
+			}
+		}else if ((btnFav === null) && (btnRename === null)) {// sinon on vérifie si les boutons n'existent pas 
+			initButton();									  // avant de les ajouter
+		}
+	}else if ((btnEnd != null) && (btnFav != null) && (btnRename != null)){ //on efface les boutons si le tas initial n'est
+		btnEnd.remove();													// pas vide
+		btnRename.remove();
+		btnFav.remove();
+	}
 }
