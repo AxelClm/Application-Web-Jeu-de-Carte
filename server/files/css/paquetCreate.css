@@ -1,0 +1,20 @@
+html,
+body {
+  height: 100%;
+}
+
+#loading{
+    position: absolute;
+    top: calc(50% - 50px);
+    right: calc(50% - 50px);
+    height: 100px;
+    width: 100px;
+}
+img{
+    border-style: groove!important;
+    border-width: thin;
+    border-color: #f8f9fa;
+    transition: all 0.3s;
+    margin: 5px!important;
+
+}

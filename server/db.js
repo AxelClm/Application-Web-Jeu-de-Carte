@@ -136,6 +136,24 @@ module.exports= {
 				}
 			});
 		});
+	},
+	addCarte : function(nomImage,labelImage){
+		return new Promise(function(resolve,reject){
+			bdd.query("INSERT INTO CARTE (image,nom) VALUES (?,?)",[nomImage,labelImage],function(err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+	},
+	getCartes: function(){
+		return new Promise(function(resolve,reject){
+			bdd.query("SELECT * FROM Carte",function(err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
 	}
 };
 function deleteLTas(idTas,idLpaquet){

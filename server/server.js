@@ -150,11 +150,25 @@ app.get("/game/:idSalle",function(req,res){
 app.get('/paquet',function(req,res){
 	res.render('paquet.ejs');
 });
-app.post('/paquet/upload',multer(multerConf).single('photo'),function(req,res){
+app.get('/uploadImage',function(req,res){
+	res.render('upload.ejs');
+});
+app.post('/paquet/create',urlencodedParser,function(req,res){
+	console.log(req.body.namePaquet);
+	bdd.getCartes().then(function(resolve){
+		console.log(resolve);
+		res.render('paquetCreate.ejs',{namePaquet : req.body.namePaquet,cartes: resolve});
+	});
+});
+app.post('/uploadImage/upload',multer(multerConf).single('photo'),function(req,res){
 	console.log(req.file);
-	if(file){
-		var name = file.filename;
-		res.render('paquet.ejs');
+	if(req.file){
+		var name = req.file.filename;
+		var label = req.body.label;
+		bdd.addCarte(name,label).then(function(resolve){
+			console.log(resolve);
+			res.redirect('/uploadImage');
+		});
 	}
 });
 /* Si la page n'est pas trouvée*/
