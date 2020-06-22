@@ -451,3 +451,70 @@ function initEndBtn(){
 	//ajout du bouton dans la sidebar
 	ul.appendChild(btn);
 }
+
+//modal qui s'affiche s'il reste des tas qui ne sont pas renommés
+// et qui n'ont pas de carte favorite
+function initModalError(){
+
+	let wrapper = document.getElementsByClassName('wrapper');
+	wrapper = wrapper[0];
+
+	let modal = document.createElement("div");
+	modal.className = "modal fade";
+	modal.id = "Error";
+	modal.setAttribute("tabindex","-1");
+	modal.setAttribute("role","dialog");
+	modal.setAttribute("aria-labelledby","modalErrorLabel");
+	modal.setAttribute("aria-hidden","true");
+		var modalDialog = document.createElement("div");
+		modalDialog.className = "modal-dialog";
+		modalDialog.setAttribute("role", "document");
+			var modalContent = document.createElement("div");
+			modalContent.className = "modal-content";
+				var modalHeader = document.createElement("div");
+				modalHeader.className = "modal-header";
+					var modalTitle = document.createElement("h5");
+					modalTitle.className = "modal-tilte";
+					modalTitle.id = "modalErrorLabel";
+					modalTitle.innerHTML = "Informations manquantes";
+				var modalBody = document.createElement("div");
+				modalBody.className = "modal-body";
+				var modalFooter = document.createElement("div");
+				modalFooter.className = "modal-footer";
+					var btn = document.createElement("btn");
+					btn.className = "btn btn-primary";
+					btn.innerHTML = "OK";
+					btn.setAttribute("type","button");
+					btn.setAttribute("data-dismiss", "modal");
+				modalFooter.appendChild(btn);
+				modalHeader.appendChild(modalTitle)
+			modalContent.appendChild(modalHeader);
+			modalContent.appendChild(modalBody);
+			modalContent.appendChild(modalFooter);
+		modalDialog.appendChild(modalContent);
+	modal.appendChild(modalDialog);
+
+	// on indique les tas qui n'ont pas de carte favorite
+	for(let element of tasDB){
+		if (element.idLTFavorite == null){
+			let p = document.createElement("p");
+			p.style.marginBottom = "10px";
+			var node = document.createTextNode(element.nom +" n'a pas de carte favorite.");
+			p.appendChild(node);
+			modalBody.appendChild(p);
+		}
+	}
+
+	// on indique les tas qui n'ont pas été renommés
+	for(let element of tasDB){
+		if (element.nom.includes("Tas n°")){
+			let p = document.createElement("p");
+			p.style.marginBottom = "10px";
+			var node = document.createTextNode(element.nom +" doit être renommé");
+			p.appendChild(node);
+			modalBody.appendChild(p);
+		}
+	}
+
+	wrapper.appendChild(modal);
+}

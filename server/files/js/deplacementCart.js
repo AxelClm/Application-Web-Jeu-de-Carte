@@ -110,6 +110,34 @@
 		}
 
 		displayBtn();
+
+		let btnEnd = document.getElementById("end");
+		if (btnEnd != null) {
+			btnEnd.onclick = function(){
+				switch(isOver()){
+
+					case true:
+						// on passe à la page de résultat 
+						console.log("on peut passer à la page de résultat");
+						break;
+
+					case false:
+						let modalError = document.getElementsByClassName('Error');
+						if(modalError != null){
+							$('#Error').remove();
+						}
+						initModalError();
+						$('#Error').modal('show');
+						console.log("il manque des noms de titre et cartes favorrite");
+						break;
+
+					default:
+						break;
+				}
+				
+				console.log(tasDB);
+			}
+		}
 	}
 function initObserver(){
 		clearInterval(checkImg);
@@ -156,4 +184,32 @@ function displayBtn(){
 		btnRename.remove();
 		btnFav.remove();
 	}
+}
+
+// fonction qui vérifie si chaque tas a un nom
+// donné par le joueur et une carte favorite
+function isOver(){
+	let tab = [];
+
+	//on récupère toute les balises <a> 
+	var x = document.getElementsByTagName('a');
+	console.log(x);
+
+	// on garde seulement les balises <a> qui ont un id
+	// (vu que les balises <a> avec un id renvoi au tas) 
+	for(let element of x){
+		if(element.id != "") tab.push(element);
+	}
+
+	// on vérifie si les titres de tas sont changés
+	for(let element of tab){
+		if (element.text.includes("Tas n°")) return false;
+	}
+	
+	//on vérifie si tous les tas ont une carte favorite
+	for(let element of tasDB){
+		if (element.idLTFavorite == null) return false;
+	}
+
+	return true;
 }
