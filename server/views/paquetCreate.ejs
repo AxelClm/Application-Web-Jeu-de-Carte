@@ -22,10 +22,10 @@
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
               <li class="nav-item active">
-                <a class="nav-link" href="#">Cartes <span class="sr-only">(current)</span></a>
+                <a class="nav-link" id="divCartes">Cartes <span class="sr-only">(current)</span></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Paquet</a>
+                <a class="nav-link" id="divPaquet">Paquet</a>
               </li>
             </ul>
           </div>
@@ -41,6 +41,7 @@
 
 <script type="text/javascript">
     var tabCarte;
+    var paquet = [];
     $(window).on("load",function(){
         $("#loading").hide();
         tabCarte = JSON.parse($("#tabCarte").html());
@@ -50,10 +51,25 @@
                 src:"/images/"+img["image"],
                 alt:img["nom"]
             }
-            console.log(params);
             let imgD = $("<img>",params);
             imgD.appendTo("#firstCtn");
         });
-    })
+        $("#firstCtn img").click(function(){
+            console.log(paquet.indexOf(this));
+            if(paquet.indexOf(this)>-1){
+                paquet.splice(paquet.indexOf(this),1);
+                this.style.borderColor="black";
+            }
+            else{
+                paquet.push(this);
+                console.log(paquet);
+                this.style.borderColor="blue";
+            }
+            
+        })
+        $("#divPaquet").click()
+
+    });
+
 </script>
 </html>
