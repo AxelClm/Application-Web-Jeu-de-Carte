@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<title>my site</title>
+	</head>
+	<body>
+		
+		<div class="container-fluid mt-3">
+			<h1 class="mb-2">Création d'un nouveau spectateur</h1>
+			<br>
+			<form>
+				<div class="form-group col-sm-4">
+					<label for="userName">Nom d'utilisateur</label>
+					<input type="text" name="userName" id="userName" class="form-control" required>
+				</div>
+
+				<div class="form-group col-sm-4">
+					<label for="passwrd">Mot de passe</label>
+					<input type="password" id="passwrd" name="passwrd" class="form-control" required>
+				</div>
+				
+
+				<div class="form-group col-sm-4">
+					<p>Donner le rôle d'administrateur</p>
+					<input type="radio" name="moderateur" value="true" id="option1">
+					<label for="option1" style="margin-right: 10px">Oui</label>
+
+					<input type="radio" name="moderateur" value="false" id="option2" checked>
+					<label for="option2">Non</label>
+				</div>
+								
+				<input type="submit" class="btn btn-info" name="Valider">
+			</form>
+		</div>
+	</body>
+</html>
