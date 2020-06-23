@@ -16,6 +16,15 @@ module.exports= {
 			});
 		});
 	},
+	createSpecUser : function(name, password){
+		return new Promise(function(resolve , reject){
+			bdd.query("INSERT INTO USER(Nom, Password, Spectateur) Values (\""+name+"\", \""+password+"\", 1);",function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+	},
 	createUser : function(name){
 		return new Promise(function(resolve , reject){
 			bdd.query("INSERT INTO USER(Nom,Spectateur) Values (\""+name+"\",false);",function (err,result,fields){

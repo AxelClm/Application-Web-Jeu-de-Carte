@@ -21,6 +21,18 @@ io.use(sharedsession(session));
 app.get("/login",function(req,res){
 	res.render('login.ejs',{error : 0});
 });
+//
+app.get("/createSpecUser", function(req,res){
+	res.render("createUser.ejs");
+});
+app.post("/createSpecUser",urlencodedParser, function(req,res){
+	var name = req.body.userName;
+	var psswrd = md5(req.body.passwrd);
+	bdd.createSpecUser(name,psswrd).then(function(resolve){
+	});
+
+});
+
 app.post("/login",urlencodedParser,function(req,res){
 		var name = req.body.nameUser;
 		var password = req.body.password;
