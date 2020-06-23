@@ -300,7 +300,6 @@ function initmodal(){
 	}, 100);
 }
 
-//------------------------------------------------//
 function createModalRenameTas(wrapper){
 	var modal = document.createElement("div");
 	modal.className = "modal fade";
@@ -494,23 +493,24 @@ function initModalError(){
 		modalDialog.appendChild(modalContent);
 	modal.appendChild(modalDialog);
 
+
 	// on indique les tas qui n'ont pas de carte favorite
-	for(let element of tasDB){
-		if (element.idLTFavorite == null){
+	for(let i = 1; i < tasDB.length; i++){
+		if (tasDB[i].idLTFavorite == null){
 			let p = document.createElement("p");
 			p.style.marginBottom = "10px";
-			var node = document.createTextNode(element.nom +" n'a pas de carte favorite.");
+			var node = document.createTextNode(tasDB[i].nom +" n'a pas de carte favorite.");
 			p.appendChild(node);
 			modalBody.appendChild(p);
 		}
 	}
 
 	// on indique les tas qui n'ont pas été renommés
-	for(let element of tasDB){
-		if (element.nom.includes("Tas n°")){
+	for(let i = 1; i < tasDB.length; i++){
+		if (tasDB[i].nom.includes("Tas n°")){
 			let p = document.createElement("p");
 			p.style.marginBottom = "10px";
-			var node = document.createTextNode(element.nom +" doit être renommé");
+			var node = document.createTextNode(tasDB[i].nom +" doit être renommé");
 			p.appendChild(node);
 			modalBody.appendChild(p);
 		}

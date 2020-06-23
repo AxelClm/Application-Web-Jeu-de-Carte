@@ -122,9 +122,10 @@
 						break;
 
 					case false:
+						// affichage pop-up
 						let modalError = document.getElementsByClassName('Error');
 						if(modalError != null){
-							$('#Error').remove();
+							$('#Error').remove();// suppression pour pas qu'il y est plusieurs pop-up
 						}
 						initModalError();
 						$('#Error').modal('show');
@@ -201,14 +202,17 @@ function isOver(){
 		if(element.id != "") tab.push(element);
 	}
 
-	// on vérifie si les titres de tas sont changés
+	tab.shift() // on enlève le premier élément car c'est le tas initial
+				// il n'a pas a être vérifié
+
+	// on vérifie si tous les tas sont renommés (excepté Tas n°0)
 	for(let element of tab){
 		if (element.text.includes("Tas n°")) return false;
 	}
 	
-	//on vérifie si tous les tas ont une carte favorite
-	for(let element of tasDB){
-		if (element.idLTFavorite == null) return false;
+	//on vérifie si tous les tas ont une carte favorite (excepté Tas n°0)
+	for(let i = 1; i < tasDB.length; i++){
+		if (tasDB[i].idLTFavorite == null) return false;
 	}
 
 	return true;
