@@ -28,9 +28,13 @@ app.get("/createSpecUser", function(req,res){
 app.post("/createSpecUser",urlencodedParser, function(req,res){
 	var name = req.body.userName;
 	var psswrd = md5(req.body.passwrd);
-	bdd.createSpecUser(name,psswrd).then(function(resolve){
-	});
+	var modo = req.body.moderateur;
 
+	var arg = modo == "true" ? 1 : 0;
+	
+	bdd.createSpecUser(name, psswrd, arg).then(function(resolve){
+		res.redirect("/login");
+	});
 });
 
 app.post("/login",urlencodedParser,function(req,res){

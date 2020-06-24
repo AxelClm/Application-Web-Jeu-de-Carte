@@ -16,9 +16,9 @@ module.exports= {
 			});
 		});
 	},
-	createSpecUser : function(name, password){
+	createSpecUser : function(name, password, admin){
 		return new Promise(function(resolve , reject){
-			bdd.query("INSERT INTO USER(Nom, Password, Spectateur) Values (\""+name+"\", \""+password+"\", 1);",function (err,result,fields){
+			bdd.query("INSERT INTO USER(Nom, Password, Spectateur, Administrateur) Values (\""+name+"\", \""+password+"\", 1, \""+admin+"\");",function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
