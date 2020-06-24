@@ -92,7 +92,7 @@
 				img.setAttribute("data-target","#exampleModal");
 			}
 			console.log((listeTas[idTas][i]["image"]+(".png")));
-			img.setAttribute("src","/images/"+(listeTas[idTas][i]["image"]+(".png")));
+			img.setAttribute("src","/images/"+(listeTas[idTas][i]["image"]));
 			img.setAttribute('id',listeTas[idTas][i]["idCarte"]);
 			img.setAttribute('idLpaquet',listeTas[idTas][i]["idLpaquet"])
 
