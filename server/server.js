@@ -157,8 +157,15 @@ app.post('/paquet/create',urlencodedParser,function(req,res){
 	console.log(req.body.namePaquet);
 	bdd.getCartes().then(function(resolve){
 		console.log(resolve);
+		req.session.namePaquet = req.body.namePaquet;
 		res.render('paquetCreate.ejs',{namePaquet : req.body.namePaquet,cartes: resolve});
 	});
+});
+app.post('/paquet/create/upload',urlencodedParser,function(req,res){
+	bdd.createPaquet(req.session.namePaquet,req.session.idUser,JSON.parse(req.body.json)).then(function(resolve){
+		res.redirect("/home");
+	});
+
 });
 app.post('/uploadImage/upload',multer(multerConf).single('photo'),function(req,res){
 	console.log(req.file);

@@ -21,13 +21,17 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
-              <li class="nav-item active">
-                <a class="nav-link" id="divCartes">Cartes <span class="sr-only">(current)</span></a>
+              <li class="nav-item active" id="divCartes">
+                <a class="nav-link">Cartes <span class="sr-only">(current)</span></a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" id="divPaquet">Paquet</a>
+              <li class="nav-item" id="divPaquet">
+                <a class="nav-link">Paquet</a>
               </li>
             </ul>
+            <form class="form-inline my-2 my-lg-0" id="envoie" method="post" action="/paquet/create/upload">
+                <input type="text" name="json" id="json">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Enregistrer</button>
+            </form>
           </div>
         </nav>
     </header>
@@ -36,14 +40,45 @@
     <div id="firstCtn"class="container-flex">
         <div id="loading"class="spinner-border beforeLoading"></div>
     </div>
+    <div id="secondCtn"class="container-flex" style="display: none"></div>
     <div style="display: none;" id="tabCarte"><%= JSON.stringify(cartes) %></div>
     </body>
 
 <script type="text/javascript">
     var tabCarte;
     var paquet = [];
+    var option = {
+                    animation : true,
+                    content : " ",
+                    placement: "bottom"
+                 };
+    $("#envoie").submit(function(){
+        let paquetJSON = [];
+        paquet.forEach(img => {
+            let str = img.id;
+            paquetJSON.push(str.slice(3));
+        });
+        $("#json")[0].value = JSON.stringify(paquetJSON);
+        $( "#envoie" ).submit();
+    })
+    function loadedIMG(){
+        var checkInteval = setInterval(function(){
+            var compteur = 0;
+            $("img").each(function(index,element){
+            if(element.complete){
+                compteur = compteur + 1;
+            }
+        });
+        console.log(compteur+"/"+tabCarte.length);
+        if(compteur== tabCarte.length){
+            clearInterval(checkInteval);
+            $("#loading").fadeOut(500,"linear",function(){
+                $("#firstCtn img").show();
+            });
+        }
+        },100);
+    }
     $(window).on("load",function(){
-        $("#loading").hide();
         tabCarte = JSON.parse($("#tabCarte").html());
         tabCarte.forEach(img =>{
             var params = {
@@ -54,22 +89,91 @@
             let imgD = $("<img>",params);
             imgD.appendTo("#firstCtn");
         });
-        $("#firstCtn img").click(function(){
-            console.log(paquet.indexOf(this));
-            if(paquet.indexOf(this)>-1){
-                paquet.splice(paquet.indexOf(this),1);
-                this.style.borderColor="black";
-            }
-            else{
-                paquet.push(this);
-                console.log(paquet);
-                this.style.borderColor="blue";
-            }
-            
-        })
-        $("#divPaquet").click()
-
+        loadedIMG();
+        moveToPaquet();
+        $("#firstCtn img").hide();
+        //clique sur image
+        $("#divPaquet").click(function(){
+            popoverClick();
+            $("#divCartes").removeClass("active");
+            $("#divPaquet").addClass("active");
+            $("#firstCtn").fadeOut(250,"linear",function(){
+                $("#secondCtn").fadeIn(250,"linear");
+            });
+        });
+        $("#divCartes").click(function(){
+            moveToPaquet();
+            $("#divCartes").addClass("active");
+            $("#divPaquet").removeClass("active");
+            $("#secondCtn").fadeOut(250,"linear",function(){
+                $("#firstCtn").fadeIn(250,"linear");
+            });
+        });
     });
-
+function moveToPaquet(){
+    $("#firstCtn img").unbind("click");
+    $("#firstCtn img").click(function(){
+            console.log(paquet.indexOf(this));
+            paquet.push(this);
+            console.log(paquet);
+            this.style.borderColor="blue";
+            $(this).unbind("click");
+            $(this).appendTo("#secondCtn");
+            
+        });
+}
+function createElements(id){
+    return ' <svg class="bi bi-arrow-up-circle" id=up'+id+' width="3em" height="3em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">'+
+                '<path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>'+
+                '<path fill-rule="evenodd" d="M4.646 8.354a.5.5 0 0 0 .708 0L8 5.707l2.646 2.647a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 0 0 0 .708z"/>'+
+                '<path fill-rule="evenodd" d="M8 11.5a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-1 0v5a.5.5 0 0 0 .5.5z"/>'+
+            '</svg> '+
+           ' <svg class="bi bi-arrow-down-circle" id=down'+id+' width="3em" height="3em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">'+
+               ' <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>'+
+               ' <path fill-rule="evenodd" d="M4.646 7.646a.5.5 0 0 1 .708 0L8 10.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z"/>'+
+                '<path fill-rule="evenodd" d="M8 4.5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5z"/>'+
+            '</svg> '+
+            ' <svg class="bi bi-x-circle-fill" width="3em" id=del'+id+' height=3em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">'+
+                '<path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>'+
+            '</svg>'
+}
+function popoverClick(){
+    $("#secondCtn img").popover("dispose");
+    $("#secondCtn img").each(function(index,element){
+        console.log(element);
+        $(element).popover(option);
+        $(element).on('shown.bs.popover',function(action){
+            let id = $(this).data('bs.popover').tip.id;
+            $(createElements(id)).appendTo("#"+id +" .popover-body");
+            //Up
+            $("#up"+id).click(function(){
+                $(element).insertBefore($("#secondCtn img").get($("#secondCtn img").index(element)-1));
+                $("#secondCtn img").popover("hide");
+                let index = paquet.indexOf(element);
+                if(index > 0){
+                    paquet[index] = paquet[index - 1];
+                    paquet[index - 1] = element;
+                } 
+            });
+            //Down
+            $("#down"+id).click(function(){
+                $(element).insertAfter($("#secondCtn img").get($("#secondCtn img").index(element)+1));
+                $("#secondCtn img").popover("hide");
+                let index = paquet.indexOf(element);
+                if(index < paquet.length -1){
+                    paquet[index] = paquet[index + 1];
+                    paquet[index + 1] = element;
+                } 
+            });
+            //Remove
+            $("#del"+id).click(function(){
+                paquet.splice(paquet.indexOf(element),1);
+                element.style.borderColor="black";
+                $(element).popover("hide");
+                $(element).appendTo("#firstCtn  ");
+            });
+        });
+    });
+}
 </script>
 </html>

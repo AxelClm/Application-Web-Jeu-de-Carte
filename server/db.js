@@ -155,8 +155,40 @@ module.exports= {
 				}
 			});
 		});
-	}
-};
+	},
+	createPaquet: function(Createur,Nom,tabCartesid){
+		return new Promise(function(resolve,reject){
+			createPaquet(Createur,Nom).then(function(resolved){
+					insertCartes(resolved["insertId"],tabCartesid).then(function(resolved2){
+						resolve(resolved2);
+					});
+				});
+			});
+		}
+}
+function createPaquet(Createur,Nom){
+	return new Promise(function(resolve,reject){
+		bdd.query("INSERT INTO paquet (Createur,Nom) VALUES (?,?)",[Createur,Nom], function(err,result,fields){
+			if(err){reject(err);throw err;}{
+				resolve(result);
+			}
+		})
+	});
+}
+function insertCartes(idPaquet,listeCartes){
+	return new Promise(function(resolve,reject){
+			var liste = [];
+			for (var i = 0 ; i<listeCartes.length;i++){
+				liste[i]= [idPaquet, parseInt(listeCartes[i])];
+			}
+			console.log(liste);
+			bdd.query("INSERT INTO lignePaquet (idPaquet,idCarte) VALUES ?",[liste],function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+			}
+		});
+	});
+}
 function deleteLTas(idTas,idLpaquet){
 	return new Promise(function(resolve,reject){
 			bdd.query("DELETE FROM lignetas WHERE idTas = ? AND idLPaquet = ?",[idTas,idLpaquet],function (err,result,fields){
