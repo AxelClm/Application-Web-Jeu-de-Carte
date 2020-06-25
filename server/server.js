@@ -21,6 +21,22 @@ io.use(sharedsession(session));
 app.get("/login",function(req,res){
 	res.render('login.ejs',{error : 0});
 });
+//
+app.get("/createSpecUser", function(req,res){
+	res.render("createUser.ejs");
+});
+app.post("/createSpecUser",urlencodedParser, function(req,res){
+	var name = req.body.userName;
+	var psswrd = md5(req.body.passwrd);
+	var modo = req.body.moderateur;
+
+	var arg = modo == "true" ? 1 : 0;
+	
+	bdd.createSpecUser(name, psswrd, arg).then(function(resolve){
+		res.redirect("/login");
+	});
+});
+
 app.post("/login",urlencodedParser,function(req,res){
 		var name = req.body.nameUser;
 		var password = req.body.password;

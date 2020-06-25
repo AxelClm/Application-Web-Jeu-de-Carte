@@ -1,0 +1,11 @@
+body{
+	background-color: #F5F5FF;
+}
+
+a{
+	text-decoration: none;
+	color:inherit;
+}
+a:hover{
+	color:#007bff;
+}
