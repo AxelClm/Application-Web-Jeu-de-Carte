@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Jeu de carte</title>
+        <meta charset="UTF-8" />
+        <link type="text/css" rel="stylesheet" href="/css/index.css">
+        <link type="text/css" rel="stylesheet" href="/css/game.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+            <!-- Bootstrap js -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    </head>
+
+    <body>
+        <form action ="/paquet/upload" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="text" id="label" name="label" class="form-control mb-2" placeholder="Label de l'image" required="" autofocus="">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" name="photo" id="customFile">
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </body>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            bsCustomFileInput.init();
+        });
+    </script>
+</html>

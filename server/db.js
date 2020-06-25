@@ -7,9 +7,10 @@ var bdd = mysql.createConnection({
 });
 
 module.exports= {
+	// MYSQL auto escape quand les arguments sont passés avec ?;
 	searchNamePass : function(name,password){
 		return new Promise(function(resolve , reject){
-			bdd.query("SELECT * FROM User Where nom = \""+name+ "\"and Password = \""+password+"\";",function (err,result,fields){
+			bdd.query("SELECT * FROM user WHERE Nom = ? and Password = ?;",[name,password],function (err,result,fields){
 				if(err){reject(error);throw err;}{
 					resolve(result);
 				}
@@ -27,7 +28,7 @@ module.exports= {
 	},
 	createUser : function(name){
 		return new Promise(function(resolve , reject){
-			bdd.query("INSERT INTO USER(Nom,Spectateur) Values (\""+name+"\",false);",function (err,result,fields){
+			bdd.query("INSERT INTO user (Nom,Spectateur) VALUES (?,false);",[name],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -36,7 +37,7 @@ module.exports= {
 	},
 	getPaquet : function(){
 		return new Promise(function(resolve,reject){
-			bdd.query("SELECT User.Nom as nomUser,Paquet.Nom as paquetNom,idPaquet FROM User,Paquet where Paquet.Createur = User.idUser",function (err,result,fields){
+			bdd.query("SELECT user.Nom as nomUser,paquet.Nom as paquetNom,idPaquet FROM user,paquet WHERE paquet.Createur = user.idUser",function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -45,7 +46,7 @@ module.exports= {
 	},
 	createSalle : function(idPaquet,nbrTasMax){
 		return new Promise(function(resolve,reject){
-			bdd.query("INSERT INTO SALLE (idPaquet,nbrTasMax,statut) VALUES ("+idPaquet+","+nbrTasMax+",0);",function (err,result,fields){
+			bdd.query("INSERT INTO salle (idPaquet,nbrTasMax,statut) VALUES (?,?,0);",[idPaquet,nbrTasMax],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -54,7 +55,7 @@ module.exports= {
 	},
 	getStatut: function(idSalle){
 		return new Promise(function(resolve,reject){
-			bdd.query("SELECT statut FROM salle Where idSalle = "+idSalle+";",function (err,result,fields){
+			bdd.query("SELECT statut FROM salle WHERE idSalle = ?;",[idSalle],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result[0]["statut"]);
 				}
@@ -63,7 +64,7 @@ module.exports= {
 	},
 	setStatut: function(idSalle,statut){
 		return new Promise(function(resolve,reject){
-			bdd.query("Update Salle set statut = ? where idSalle = ?",[statut,idSalle],function (err,result,fields){
+			bdd.query("UPDATE salle SET statut = ? WHERE idSalle = ?",[statut,idSalle],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -72,7 +73,7 @@ module.exports= {
 	},
 	getJoueur: function(idSalle){
 		return new Promise(function(resolve,reject){
-			bdd.query("SELECT idJoueur FROM salle Where idSalle = "+idSalle+";",function (err,result,fields){
+			bdd.query("SELECT idJoueur FROM salle WHERE idSalle = ?;",[idSalle],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result[0]["idJoueur"]);
 				}
@@ -81,7 +82,7 @@ module.exports= {
 	},
 	setJoueur: function(idSalle,idJoueur){
 		return new Promise(function(resolve,reject){
-			bdd.query("Update Salle set idJoueur = "+idJoueur+" Where idSalle = "+idSalle+";",function (err,result,fields){
+			bdd.query("UPDATE salle SET idJoueur = ? WHERE idSalle = ?;",[idJoueur,idSalle],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				console.log(result);
 				resolve(result);
@@ -100,7 +101,7 @@ module.exports= {
 	},
 	getTas: function(idSalle){
 		return new Promise(function(resolve,reject){
-			bdd.query("SELECT idTas,nom,idLTFavorite from Tas where idSalle = ?",idSalle,function (err,result,fields){
+			bdd.query("SELECT idTas,nom,idLTFavorite from tas where idSalle = ?",idSalle,function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -109,8 +110,8 @@ module.exports= {
 	},
 	getLTas: function(idSalle){
 		return new Promise(function(resolve,reject){
-			bdd.query("select Tas.idTas,LigneTas.idLpaquet,Carte.idCarte,image from Tas,LigneTas,LignePaquet,Carte where tas.idTas = ligneTas.idTas and idSalle = ?"+ 
-				" and ligneTas.idLPaquet = LignePaquet.idLpaquet and LignePaquet.idCarte = Carte.idCarte",idSalle,function (err,result,fields){
+			bdd.query("select tas.idTas,lignetas.idLpaquet,carte.idCarte,image from tas,lignetas,lignepaquet,carte where tas.idTas = lignetas.idTas and idSalle = ?"+ 
+				" and lignetas.idLPaquet = lignepaquet.idLpaquet and lignepaquet.idCarte = carte.idCarte",idSalle,function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -130,7 +131,7 @@ module.exports= {
 	},
 	renameTas : function(idTas,idSalle,nNom){
 		return new Promise(function(resolve,reject){
-			bdd.query("Update Tas set nom = ? Where idSalle = ? and idTas = ?",[nNom,idSalle,idTas],function (err,result,fields){
+			bdd.query("Update tas set nom = ? Where idSalle = ? and idTas = ?",[nNom,idSalle,idTas],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -139,17 +140,67 @@ module.exports= {
 	},
 	setFavoriteCard : function(idTas,idLPaquet,idSalle){
 		return new Promise(function(resolve,reject){
-			bdd.query("Update Tas set idLTFavorite = ? Where idSalle = ? and idTas = ?",[idLPaquet,idSalle,idTas],function(err,result,fields){
+			bdd.query("Update tas set idLTFavorite = ? Where idSalle = ? and idTas = ?",[idLPaquet,idSalle,idTas],function(err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
 			});
 		});
-	}
-};
+	},
+	addCarte : function(nomImage,labelImage){
+		return new Promise(function(resolve,reject){
+			bdd.query("INSERT INTO carte (image,nom) VALUES (?,?)",[nomImage,labelImage],function(err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+	},
+	getCartes: function(){
+		return new Promise(function(resolve,reject){
+			bdd.query("SELECT * FROM carte",function(err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+				}
+			});
+		});
+	},
+	createPaquet: function(Createur,Nom,tabCartesid){
+		return new Promise(function(resolve,reject){
+			createPaquet(Createur,Nom).then(function(resolved){
+					insertCartes(resolved["insertId"],tabCartesid).then(function(resolved2){
+						resolve(resolved2);
+					});
+				});
+			});
+		}
+}
+function createPaquet(Createur,Nom){
+	return new Promise(function(resolve,reject){
+		bdd.query("INSERT INTO paquet (Createur,Nom) VALUES (?,?)",[Createur,Nom], function(err,result,fields){
+			if(err){reject(err);throw err;}{
+				resolve(result);
+			}
+		})
+	});
+}
+function insertCartes(idPaquet,listeCartes){
+	return new Promise(function(resolve,reject){
+			var liste = [];
+			for (var i = 0 ; i<listeCartes.length;i++){
+				liste[i]= [idPaquet, parseInt(listeCartes[i])];
+			}
+			console.log(liste);
+			bdd.query("INSERT INTO lignePaquet (idPaquet,idCarte) VALUES ?",[liste],function (err,result,fields){
+				if(err){reject(err);throw err;}{
+				resolve(result);
+			}
+		});
+	});
+}
 function deleteLTas(idTas,idLpaquet){
 	return new Promise(function(resolve,reject){
-			bdd.query("DELETE FROM LIGNETAS WHERE IDTAS = ? AND IDLPAQUET = ?",[idTas,idLpaquet],function (err,result,fields){
+			bdd.query("DELETE FROM lignetas WHERE idTas = ? AND idLPaquet = ?",[idTas,idLpaquet],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -158,7 +209,7 @@ function deleteLTas(idTas,idLpaquet){
 }
 function  insertIntoTas(idTas,idLpaquet){
 	return new Promise(function(resolve,reject){
-		bdd.query("INSERT INTO ligneTas (idTas,idLpaquet) VALUES (?,?)",[idTas,idLpaquet],function(err,result,fields) {
+		bdd.query("INSERT INTO lignetas (idTas,idLpaquet) VALUES (?,?)",[idTas,idLpaquet],function(err,result,fields) {
 			if(err){reject(err);throw err;}{
 				resolve(result);
 			}
@@ -172,7 +223,7 @@ function createTas (idSalle,nbrTasMax){
 				liste[i]= ["Tas n°"+i, idSalle];
 			}
 			console.log(liste);
-			bdd.query("INSERT INTO TAS (nom,idSalle) VALUES ?",[liste],function (err,result,fields){
+			bdd.query("INSERT INTO tas (nom,idSalle) VALUES ?",[liste],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 			}
@@ -190,7 +241,7 @@ function initTas(idPaquet,idTas){
 				liste[i] = [idTas,resolved[i]["idLpaquet"]];
 			}
 			console.log(liste);
-			bdd.query("INSERT INTO ligneTas (idTas,idLPaquet) VALUES ?",[liste],function (err,result,fields){
+			bdd.query("INSERT INTO lignetas (idTas,idLPaquet) VALUES ?",[liste],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 					resolve(result);
 				}
@@ -200,7 +251,7 @@ function initTas(idPaquet,idTas){
 }
 function getPaquet(idPaquet){
 	return new Promise(function(resolve,reject){
-			bdd.query("SELECT * FROM lignePaquet WHERE idPaquet = ?",idPaquet,function (err,result,fields){
+			bdd.query("SELECT * FROM lignepaquet WHERE idPaquet = ?",idPaquet,function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				console.log(result);
 				resolve(result);
