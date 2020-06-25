@@ -191,7 +191,7 @@ function insertCartes(idPaquet,listeCartes){
 				liste[i]= [idPaquet, parseInt(listeCartes[i])];
 			}
 			console.log(liste);
-			bdd.query("INSERT INTO lignePaquet (idPaquet,idCarte) VALUES ?",[liste],function (err,result,fields){
+			bdd.query("INSERT INTO lignepaquet (idPaquet,idCarte) VALUES ?",[liste],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 			}

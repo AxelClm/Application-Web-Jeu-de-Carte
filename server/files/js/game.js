@@ -27,7 +27,7 @@ socket.on("Spectateur",function(data){
 		Observer = new IntersectionObserver( 
 			entries => {
 				entries.forEach(ent => {
-					if(ent.isIntersecting == true){
+					if(ent.intersectionRatio == 1){
 						window.requestIdleCallback(function(){socket.emit("carteVisible",ent.target.getAttribute("idLpaquet"))});
 					}
 					else{
