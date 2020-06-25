@@ -30,7 +30,8 @@ var ent = require('ent');
 var session = require("express-session")({
     secret: "my-secret",
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {secure: false}
   });
 var sharedsession = require("express-socket.io-session");
 var server = require('http').createServer(app);
