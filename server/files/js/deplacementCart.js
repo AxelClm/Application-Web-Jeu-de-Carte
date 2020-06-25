@@ -109,20 +109,34 @@
 			initObserver();
 		}
 
-		
-		let btnFav = document.getElementById("choixFav");
-		let btnRename = document.getElementById("renameCard");
+		displayBtn();
 
-		if(tasActuel != Object.keys(listeTas)[0]){ // on n'affiche pas les boutons sur le tas initial (tas0)
-			// on ajoute les boutons
-			if (tas0isEmpty()) {
-				if((btnFav === null) && (btnRename === null)){ // afin de ne pas créer plusieurs boutons lors du
-					initButton();   						   // changement de tas
+		let btnEnd = document.getElementById("end");
+		if (btnEnd != null) {
+			btnEnd.onclick = function(){
+				switch(isOver()){
+
+					case true:
+						// on passe à la page de résultat 
+						console.log("on peut passer à la page de résultat");
+						break;
+
+					case false:
+						// affichage pop-up
+						let modalError = document.getElementsByClassName('Error');
+						if(modalError != null){
+							$('#Error').remove();// suppression pour pas qu'il y est plusieurs pop-up
+						}
+						initModalError();
+						$('#Error').modal('show');
+						console.log("il manque des noms de titre et cartes favorrite");
+						break;
+
+					default:
+						break;
 				}
-			// on supprime les boutons si le tas0 (initial) contient une carte
-			}else if (!tas0isEmpty() && (btnFav != null) && (btnRename != null) ){
-				btnFav.remove();
-				btnRename.remove();
+				
+				console.log(tasDB);
 			}
 		}
 	}
@@ -146,4 +160,60 @@ function tas0isEmpty(){
 	var firstIdTas = Object.keys(listeTas)[0];
 
 	return ((listeTas[firstIdTas].length === 0) ? true : false);
+}
+
+// fonction qui détermine si les boutons doivent être affichés
+function displayBtn(){
+	let btnFav = document.getElementById("choixFav");
+	let btnRename = document.getElementById("renameCard");
+	let btnEnd = document.getElementById("end");
+
+	if(tas0isEmpty()){ // si le tas initial est vide
+		if(btnEnd === null) initEndBtn(); // on verifie si le bouton de fin n'est pas sur la page avant de le créer
+
+		if (tasActuel == Object.keys(listeTas)[0]) {// si le joeur se trouve dans le tas intial on efface les boutons 
+													// seulement s'ils y sont
+			if ((btnFav != null) && (btnRename != null)) {
+				btnRename.remove();
+				btnFav.remove();
+			}
+		}else if ((btnFav === null) && (btnRename === null)) {// sinon on vérifie si les boutons n'existent pas 
+			initButton();									  // avant de les ajouter
+		}
+	}else if ((btnEnd != null) && (btnFav != null) && (btnRename != null)){ //on efface les boutons si le tas initial n'est
+		btnEnd.remove();													// pas vide
+		btnRename.remove();
+		btnFav.remove();
+	}
+}
+
+// fonction qui vérifie si chaque tas a un nom
+// donné par le joueur et une carte favorite
+function isOver(){
+	let tab = [];
+
+	//on récupère toute les balises <a> 
+	var x = document.getElementsByTagName('a');
+	console.log(x);
+
+	// on garde seulement les balises <a> qui ont un id
+	// (vu que les balises <a> avec un id renvoi au tas) 
+	for(let element of x){
+		if(element.id != "") tab.push(element);
+	}
+
+	tab.shift() // on enlève le premier élément car c'est le tas initial
+				// il n'a pas a être vérifié
+
+	// on vérifie si tous les tas sont renommés (excepté Tas n°0)
+	for(let element of tab){
+		if (element.text.includes("Tas n°")) return false;
+	}
+	
+	//on vérifie si tous les tas ont une carte favorite (excepté Tas n°0)
+	for(let i = 1; i < tasDB.length; i++){
+		if (tasDB[i].idLTFavorite == null) return false;
+	}
+
+	return true;
 }

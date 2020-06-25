@@ -300,7 +300,6 @@ function initmodal(){
 	}, 100);
 }
 
-//------------------------------------------------//
 function createModalRenameTas(wrapper){
 	var modal = document.createElement("div");
 	modal.className = "modal fade";
@@ -438,3 +437,84 @@ function initButton(){
 	contentBtn.appendChild(btn2);
 }
 
+function initEndBtn(){
+	let ul = document.getElementById('tasSubMenu');
+
+	let btn = document.createElement('button');
+	btn.setAttribute("type","button");
+	btn.className = "btn btn-success btn-sm";
+	btn.id = "end";
+	btn.innerHTML = "J'ai fini !";
+	btn.style.marginLeft = "15px";
+
+	//ajout du bouton dans la sidebar
+	ul.appendChild(btn);
+}
+
+//modal qui s'affiche s'il reste des tas qui ne sont pas renommés
+// et qui n'ont pas de carte favorite
+function initModalError(){
+
+	let wrapper = document.getElementsByClassName('wrapper');
+	wrapper = wrapper[0];
+
+	let modal = document.createElement("div");
+	modal.className = "modal fade";
+	modal.id = "Error";
+	modal.setAttribute("tabindex","-1");
+	modal.setAttribute("role","dialog");
+	modal.setAttribute("aria-labelledby","modalErrorLabel");
+	modal.setAttribute("aria-hidden","true");
+		var modalDialog = document.createElement("div");
+		modalDialog.className = "modal-dialog";
+		modalDialog.setAttribute("role", "document");
+			var modalContent = document.createElement("div");
+			modalContent.className = "modal-content";
+				var modalHeader = document.createElement("div");
+				modalHeader.className = "modal-header";
+					var modalTitle = document.createElement("h5");
+					modalTitle.className = "modal-tilte";
+					modalTitle.id = "modalErrorLabel";
+					modalTitle.innerHTML = "Informations manquantes";
+				var modalBody = document.createElement("div");
+				modalBody.className = "modal-body";
+				var modalFooter = document.createElement("div");
+				modalFooter.className = "modal-footer";
+					var btn = document.createElement("btn");
+					btn.className = "btn btn-primary";
+					btn.innerHTML = "OK";
+					btn.setAttribute("type","button");
+					btn.setAttribute("data-dismiss", "modal");
+				modalFooter.appendChild(btn);
+				modalHeader.appendChild(modalTitle)
+			modalContent.appendChild(modalHeader);
+			modalContent.appendChild(modalBody);
+			modalContent.appendChild(modalFooter);
+		modalDialog.appendChild(modalContent);
+	modal.appendChild(modalDialog);
+
+
+	// on indique les tas qui n'ont pas de carte favorite
+	for(let i = 1; i < tasDB.length; i++){
+		if (tasDB[i].idLTFavorite == null){
+			let p = document.createElement("p");
+			p.style.marginBottom = "10px";
+			var node = document.createTextNode(tasDB[i].nom +" n'a pas de carte favorite.");
+			p.appendChild(node);
+			modalBody.appendChild(p);
+		}
+	}
+
+	// on indique les tas qui n'ont pas été renommés
+	for(let i = 1; i < tasDB.length; i++){
+		if (tasDB[i].nom.includes("Tas n°")){
+			let p = document.createElement("p");
+			p.style.marginBottom = "10px";
+			var node = document.createTextNode(tasDB[i].nom +" doit être renommé");
+			p.appendChild(node);
+			modalBody.appendChild(p);
+		}
+	}
+
+	wrapper.appendChild(modal);
+}
