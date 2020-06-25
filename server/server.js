@@ -178,7 +178,7 @@ app.post('/paquet/create',urlencodedParser,function(req,res){
 	});
 });
 app.post('/paquet/create/upload',urlencodedParser,function(req,res){
-	bdd.createPaquet(req.session.namePaquet,req.session.idUser,JSON.parse(req.body.json)).then(function(resolve){
+	bdd.createPaquet(req.session.idUser,req.session.namePaquet,JSON.parse(req.body.json)).then(function(resolve){
 		res.redirect("/home");
 	});
 
@@ -188,6 +188,7 @@ app.post('/uploadImage/upload',multer(multerConf).single('photo'),function(req,r
 	if(req.file){
 		var name = req.file.filename;
 		var label = req.body.label;
+		console.log("INSERT IMAGE : ",name,label);
 		bdd.addCarte(name,label).then(function(resolve){
 			console.log(resolve);
 			res.redirect('/uploadImage');

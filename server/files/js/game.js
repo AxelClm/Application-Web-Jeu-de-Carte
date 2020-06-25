@@ -28,10 +28,10 @@ socket.on("Spectateur",function(data){
 			entries => {
 				entries.forEach(ent => {
 					if(ent.intersectionRatio == 1){
-						window.requestIdleCallback(function(){socket.emit("carteVisible",ent.target.getAttribute("idLpaquet"))});
+						socket.emit("carteVisible",ent.target.getAttribute("idLpaquet"));
 					}
 					else{
-						window.requestIdleCallback(function(){socket.emit("carteNonVisible",ent.target.getAttribute("idLpaquet"))});
+						socket.emit("carteNonVisible",ent.target.getAttribute("idLpaquet"));
 					}
 				});
 			}, 
