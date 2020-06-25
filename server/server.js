@@ -304,7 +304,7 @@ io.on('connection',function (socket){
 						});
 						socket.on("disconnect",function(){
 							lock.acquire(session.salleJoined,function(release){ 
-								bdd.setJoueur(session.salleJoined,"null").then(function(resolve){
+								bdd.setJoueur(session.salleJoined,null).then(function(resolve){
 									bdd.setStatut(session.salleJoined,0).then(function(){
 										io.sockets.in("salle"+session.salleJoined).emit('statut',0);
 										release();
