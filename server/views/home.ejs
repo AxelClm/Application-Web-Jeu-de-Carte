@@ -12,7 +12,7 @@
 		<!-- Navigation -->
 		<nav class="navbar navbar-dark bg-dark">
 			<div class="container">
-				<a class="navbar-brand" href="#">Page d'accueil</a>
+				<p class="navbar-brand">Page d'accueil</p>
 			</div>
 		</nav>
 
@@ -20,6 +20,7 @@
 		<section class="text-center">
 			<div class="container">
 				<div class="row mt-5 d-flex justify-content-around">
+					<% if(valAdmin == 1){ %>
 					<div class="col-lg-4">
 						<div class="mx-auto mb-5 mb-lg-0 mb-lg-3">
 							<div class="justify-content-center p-3 py-5 mb-2 bg-light">
@@ -34,10 +35,11 @@
 							<p class="lead mb-0">Crée un nouveau compte spectateur, le compte peut avoir le rôle d'administrateur.</p>
 						</div>
 					</div>
+					<% } %>
 					<div class="col-lg-4">
 						<div class="mx-auto mb-5 mb-lg-0 mb-lg-3">
 							<div class="justify-content-center p-3 py-5 mb-2 bg-light">
-								<a href="/#">
+								<a href="/paquet">
 									<svg class="bi bi-file-plus" width="45%" height="45%" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
 										<path d="M9 1H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8h-1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h5V1z"></path>
 										<path fill-rule="evenodd" d="M13.5 1a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1H13V1.5a.5.5 0 0 1 .5-.5z"></path>

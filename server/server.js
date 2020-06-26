@@ -48,7 +48,12 @@ app.get("/login",function(req,res){
 });
 //
 app.get("/createSpecUser", function(req,res){
-	res.render("createUser.ejs");
+	console.log("valeur admin "+req.session.admin);
+	if(req.session.admin == 1){
+		res.render("createUser.ejs");
+	}else{
+		res.redirect("/home");
+	}
 });
 app.post("/createSpecUser",urlencodedParser, function(req,res){
 	var name = req.body.userName;
@@ -58,7 +63,7 @@ app.post("/createSpecUser",urlencodedParser, function(req,res){
 	var arg = modo == "true" ? 1 : 0;
 	
 	bdd.createSpecUser(name, psswrd, arg).then(function(resolve){
-		res.redirect("/login");
+		res.redirect("/home");
 	});
 });
 
@@ -73,11 +78,22 @@ app.post("/login",urlencodedParser,function(req,res){
 				req.session.name = resolve[0]["Nom"];
 				req.session.idUser = resolve[0]["idUser"];
 				req.session.spectateur = resolve[0]["Spectateur"];
-				res.redirect("/home");
+				
+
+				return bdd.isAdmin(resolve[0]["Nom"]);
 			}
 			else{
 				res.render('login.ejs',{error : 1});
+				next();
 			}	
+		}).then(function(newresolve){
+			console.log(newresolve);
+			if(newresolve[0].Administrateur == 1){
+				req.session.admin = 1
+			}else{
+				req.session.admin = 0;
+			}
+			res.redirect("/home");
 		});
 		
 	}
@@ -106,7 +122,7 @@ app.get("/home",function(req,res){
 		}
 		else{
 			if(req.session.spectateur == 1){
-				res.render("home.ejs");
+				res.render("home.ejs",{valAdmin : req.session.admin});
 			}
 			else{
 				res.render("homeJ.ejs");
