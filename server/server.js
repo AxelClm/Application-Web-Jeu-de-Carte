@@ -181,7 +181,9 @@ app.get("/game/:idSalle",function(req,res){
 	}
 });
 app.get('/paquet',function(req,res){
-	res.render('paquet.ejs');
+	bdd.getPaquet().then(function(resolve){
+		res.render('paquet.ejs',{paquets : resolve});
+	});
 });
 app.get('/uploadImage',function(req,res){
 	res.render('upload.ejs');
@@ -191,7 +193,14 @@ app.post('/paquet/create',urlencodedParser,function(req,res){
 	bdd.getCartes().then(function(resolve){
 		console.log(resolve);
 		req.session.namePaquet = req.body.namePaquet;
-		res.render('paquetCreate.ejs',{namePaquet : req.body.namePaquet,cartes: resolve});
+		if(req.body.idPaquet == undefined){
+			res.render('paquetCreate.ejs',{namePaquet : req.body.namePaquet,cartes: resolve,importPaquet : "null"});
+		}
+		else{
+			bdd.getLPaquet(req.body.idPaquet).then(function(resolve2){
+				res.render('paquetCreate.ejs',{namePaquet : req.body.namePaquet,cartes: resolve,importPaquet : resolve2});
+			});
+		}
 	});
 });
 app.post('/paquet/create/upload',urlencodedParser,function(req,res){

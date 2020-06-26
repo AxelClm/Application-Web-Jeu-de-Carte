@@ -98,18 +98,22 @@
           </div>
           <form method="post" action="/paquet/create">
               <div class="modal-body">
-
-                    <label for="namePaquet" class="sr-only">Nom du Paquet</label>
-                    <input type="text" id="namePaquet" name="namePaquet" class="form-control mb-2" placeholder="Nom du Paquet" required="" autofocus="">
-                    <div class="form-group">
-                            <label>Selection du à importer paquet</label>
+              <form method="post" action="/paquet/create">
+                    <div class="form-group" method="post" action="/paquet/create">
+                            <label for="namePaquet" class="sr-only">Nom du Paquet</label>
+                            <input type="text" id="namePaquet" name="namePaquet" class="form-control mb-2" placeholder="Nom du Paquet" required="" autofocus="">
+                            <label for="idPaquet">Selection du paquet à importer</label>
                             <select id="idPaquet" name="idPaquet" class="form-control">
+                              <% paquets.forEach( p => { %>
+                                <option value='<%=p["idPaquet"]%>'><%= p["paquetNom"]%> : <%= p["nomUser"] %></option>
+                              <% }); %>
                             </select>
                         </div>
-              </div>
-              <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Création</button>
-              </div>
+                    </div>
+                    <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">Création</button>
+                    </div>
+              </form>
         </form>
         </div>
       </div>

@@ -14,7 +14,12 @@ img{
     border-style: groove!important;
     border-width: thin;
     border-color: #f8f9fa;
-    transition: all 0.3s;
     margin: 5px!important;
-
+    max-width: 370px!important;
+    max-height: auto!important;
+}
+@media (max-width: 768px) {
+  img{
+      max-width: calc(100vw - 50px);
+  }
 }

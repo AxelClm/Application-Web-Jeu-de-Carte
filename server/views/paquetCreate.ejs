@@ -42,10 +42,12 @@
     </div>
     <div id="secondCtn"class="container-flex" style="display: none"></div>
     <div style="display: none;" id="tabCarte"><%= JSON.stringify(cartes) %></div>
+    <div style="display: none;" id="tabimport"><%= JSON.stringify(importPaquet) %></div>
     </body>
 
 <script type="text/javascript">
     var tabCarte;
+    var tabimport;
     var paquet = [];
     var option = {
                     animation : true,
@@ -72,6 +74,16 @@
         console.log(compteur+"/"+tabCarte.length);
         if(compteur== tabCarte.length){
             clearInterval(checkInteval);
+            if(tabimport != "null"){
+                tabimport.forEach(img =>{
+                    console.log($("#img"+img["idCarte"]));
+                    console.log(img);   
+                    paquet.push($("#img"+img["idCarte"])[0])
+                    $("#img"+img["idCarte"]).css("border-color","blue");
+                    $("#img"+img["idCarte"]).unbind("click");
+                    $("#img"+img["idCarte"]).appendTo("#secondCtn");
+                });
+            }
             $("#loading").fadeOut(500,"linear",function(){
                 $("#firstCtn img").show();
             });
@@ -80,6 +92,12 @@
     }
     $(window).on("load",function(){
         tabCarte = JSON.parse($("#tabCarte").html());
+        if($("#tabimport").html() != "null"){
+            tabimport = JSON.parse($("#tabimport").html());
+        }
+        else{
+            tabimport = "null";
+        }
         tabCarte.forEach(img =>{
             var params = {
                 id: "img"+img["idCarte"],
@@ -98,7 +116,9 @@
             $("#divCartes").removeClass("active");
             $("#divPaquet").addClass("active");
             $("#firstCtn").fadeOut(250,"linear",function(){
-                $("#secondCtn").fadeIn(250,"linear");
+                $("#secondCtn").fadeIn(250,"linear",function(){
+                    $("#secondCtn img").show();
+                });
             });
         });
         $("#divCartes").click(function(){
