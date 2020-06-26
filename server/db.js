@@ -168,12 +168,19 @@ module.exports= {
 	createPaquet: function(Createur,Nom,tabCartesid){
 		return new Promise(function(resolve,reject){
 			createPaquet(Createur,Nom).then(function(resolved){
-					insertCartes(resolved["insertId"],tabCartesid).then(function(resolved2){
-						resolve(resolved2);
-					});
+				insertCartes(resolved["insertId"],tabCartesid).then(function(resolved2){
+					resolve(resolved2);
 				});
 			});
-		}
+		});
+	},
+	getLPaquet: function(idPaquet){
+		return new Promise(function(resolve,reject){
+			getPaquet(idPaquet).then(function(resolved){
+				resolve(resolved);
+			})
+		});
+	}
 }
 function createPaquet(Createur,Nom){
 	return new Promise(function(resolve,reject){
