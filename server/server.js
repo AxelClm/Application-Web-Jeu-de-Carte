@@ -158,10 +158,12 @@ app.post("/create",urlencodedParser,function(req,res){
 	}
 });
 app.get("/result",function(req,res){
-	res.render('result.ejs');
-});
-app.get("/join",function(req,res){
-	res.render('home.ejs');
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		res.render('result.ejs');
+	}
 });
 app.get("/game/:idSalle",function(req,res){
 	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined || req.session.salleJoined == undefined){
@@ -181,16 +183,31 @@ app.get("/game/:idSalle",function(req,res){
 	}
 });
 app.get('/paquet',function(req,res){
-	bdd.getPaquet().then(function(resolve){
-		res.render('paquet.ejs',{paquets : resolve});
-	});
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		bdd.getPaquet().then(function(resolve){
+			res.render('paquet.ejs',{paquets : resolve});
+		});
+	}
+	
 });
 app.get('/uploadImage',function(req,res){
-	res.render('upload.ejs');
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		res.render('upload.ejs');
+	}
 });
 app.post('/paquet/create',urlencodedParser,function(req,res){
-	console.log(req.body.namePaquet);
-	bdd.getCartes().then(function(resolve){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		console.log(req.body.namePaquet);
+		bdd.getCartes().then(function(resolve){
 		console.log(resolve);
 		req.session.namePaquet = req.body.namePaquet;
 		if(req.body.idPaquet == undefined){
@@ -202,23 +219,34 @@ app.post('/paquet/create',urlencodedParser,function(req,res){
 			});
 		}
 	});
+	}
 });
 app.post('/paquet/create/upload',urlencodedParser,function(req,res){
-	bdd.createPaquet(req.session.idUser,req.session.namePaquet,JSON.parse(req.body.json)).then(function(resolve){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
 		res.redirect("/home");
-	});
+	}
+	else{
+		bdd.createPaquet(req.session.idUser,req.session.namePaquet,JSON.parse(req.body.json)).then(function(resolve){
+			res.redirect("/home");
+		});
+	}
 
 });
 app.post('/uploadImage/upload',multer(multerConf).single('photo'),function(req,res){
-	console.log(req.file);
-	if(req.file){
-		var name = req.file.filename;
-		var label = req.body.label;
-		console.log("INSERT IMAGE : ",name,label);
-		bdd.addCarte(name,label).then(function(resolve){
-			console.log(resolve);
-			res.redirect('/uploadImage');
-		});
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+	   console.log(req.file);
+		if(req.file){
+			var name = req.file.filename;
+			var label = req.body.label;
+			console.log("INSERT IMAGE : ",name,label);
+			bdd.addCarte(name,label).then(function(resolve){
+				console.log(resolve);
+				res.redirect('/uploadImage');
+			});
+		}
 	}
 });
 /* Si la page n'est pas trouvée*/

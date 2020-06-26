@@ -19,7 +19,7 @@ module.exports= {
 	},
 	createSpecUser : function(name, password, admin){
 		return new Promise(function(resolve , reject){
-			bdd.query("INSERT INTO USER(Nom, Password, Spectateur, Administrateur) Values (?,?,1,?);",[name,password,admin],function (err,result,fields){
+			bdd.query("INSERT INTO user (Nom, Password, Spectateur, Administrateur) Values (?,?,1,?);",[name,password,admin],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -28,7 +28,7 @@ module.exports= {
 	},
 	isAdmin : function(name){
 		return new Promise(function(resolve,reject){
-			bdd.query("SELECT Administrateur FROM USER WHERE Nom = ?;",[name],function(err, result, fields){
+			bdd.query("SELECT Administrateur FROM user WHERE Nom = ?;",[name],function(err, result, fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
