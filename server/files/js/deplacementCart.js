@@ -119,6 +119,9 @@
 					case true:
 						// on passe à la page de résultat 
 						console.log("on peut passer à la page de résultat");
+						console.log(listeTas);
+						console.log(tabTitre);
+						console.log(tabFavorite);
 						break;
 
 					case false:
@@ -129,7 +132,7 @@
 						}
 						initModalError();
 						$('#Error').modal('show');
-						console.log("il manque des noms de titre et cartes favorrite");
+						console.log("il manque des noms de titre et cartes favorite");
 						break;
 
 					default:

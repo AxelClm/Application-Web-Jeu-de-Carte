@@ -135,7 +135,7 @@ function switchGameMode(){
 		wrapper.className ="wrapper";
 		createSideBar(wrapper);
 		createContent(wrapper);
-		createModal(wrapper,7);
+		createModal(wrapper);
 		createModalRenameTas(wrapper);
 	container.innerHTML = "";
 	container.appendChild(wrapper);
@@ -216,7 +216,7 @@ function createContent(wrapper){
 		content.appendChild(contenuImg);
 	wrapper.appendChild(content)
 }
-function createModal(wrapper,nbrTas){
+function createModal(wrapper){
 	let modalFade = document.createElement("div");
 		modalFade.id="exampleModal";
 		modalFade.className="modal fade";
@@ -511,7 +511,7 @@ function initModalError(){
 		if ((tabTitre[tasDB[i].idTas].includes("Tas n°")) && (listeTas[tasDB[i].idTas].length != 0)){
 			let p = document.createElement("p");
 			p.style.marginBottom = "10px";
-			var node = document.createTextNode(tabTitre[tasDB[i].idTas] +" doit être renommé");
+			var node = document.createTextNode(tabTitre[tasDB[i].idTas] +" doit être renommé.");
 			p.appendChild(node);
 			modalBody.appendChild(p);
 		}
