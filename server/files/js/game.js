@@ -249,7 +249,7 @@ function createModal(wrapper,nbrTas){
 								inputButton.setAttribute("checked","true");
 							div.appendChild(inputButton);
 							let label = document.createElement("label");
-								label.setAttribute("for","t"+i);
+								label.setAttribute("for","t"+tasDB[i]["idTas"]);
 								label.innerHTML = tasDB[i]["nom"];
 							div.appendChild(label);
 						modalBody.appendChild(div);
@@ -383,9 +383,9 @@ function initRenameModal(){
 // initialisation du tableau qui contient les noms
 // donnés au tas par le joueur
 function initTabTitre(){
-	for(var i = 0; i < tasDB.length; i++){
-		tabTitre[tasDB[i]["idTas"]] = null;
-		tabFavorite[tasDB[i]["idTas"]] = null;
+	for(var i = 1; i < tasDB.length; i++){
+		tabTitre[tasDB[i]["idTas"]] = tasDB[i]["nom"]; // on copie les noms qui sont dans tasDB au cas où il y a une déconnexion de la part du joueur 
+		tabFavorite[tasDB[i]["idTas"]] = null;         // car tasDB garde les titres donnés par le joueur
 	}
 	console.log(tabTitre);
 }
@@ -429,6 +429,7 @@ function initButton(){
 				$("#contenuImg img").each(function(index,element){
 					$(element).unbind('click');
 				});
+				tabFavorite[getCurrTas()] = idCarte;
 				setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 100); //réactivation du modal
 			});
 		};
@@ -496,10 +497,10 @@ function initModalError(){
 
 	// on indique les tas qui n'ont pas de carte favorite
 	for(let i = 1; i < tasDB.length; i++){
-		if (tasDB[i].idLTFavorite == null){
+		if ((tasDB[i].idLTFavorite == null) && (listeTas[tasDB[i].idTas].length != 0)){
 			let p = document.createElement("p");
 			p.style.marginBottom = "10px";
-			var node = document.createTextNode(tasDB[i].nom +" n'a pas de carte favorite.");
+			var node = document.createTextNode(tabTitre[tasDB[i].idTas] +" n'a pas de carte favorite.");
 			p.appendChild(node);
 			modalBody.appendChild(p);
 		}
@@ -507,10 +508,10 @@ function initModalError(){
 
 	// on indique les tas qui n'ont pas été renommés
 	for(let i = 1; i < tasDB.length; i++){
-		if (tasDB[i].nom.includes("Tas n°")){
+		if ((tabTitre[tasDB[i].idTas].includes("Tas n°")) && (listeTas[tasDB[i].idTas].length != 0)){
 			let p = document.createElement("p");
 			p.style.marginBottom = "10px";
-			var node = document.createTextNode(tasDB[i].nom +" doit être renommé");
+			var node = document.createTextNode(tabTitre[tasDB[i].idTas] +" doit être renommé");
 			p.appendChild(node);
 			modalBody.appendChild(p);
 		}
