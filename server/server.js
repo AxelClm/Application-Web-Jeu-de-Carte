@@ -47,6 +47,30 @@ app.get("/login",function(req,res){
 	res.render('login.ejs',{error : 0});
 });
 //
+app.get("/results", function(req, res){
+
+});
+app.get("/roomsHistory",function(req,res){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined){
+		res.redirect("login.ejs");
+	}else{
+		if (req.session.admin != 1) {
+			res.redirect("home.ejs")
+		}else{
+			bdd.getRooms().then(function(resolve){
+				console.log(resolve)
+				var tabRes = resolve;
+				res.render('roomsHistory.ejs',{tab : tabRes});
+			});
+		}
+	}
+});
+
+app.post("/roomsHistory", urlencodedParser, function(req,res){
+	bdd.deleteRoom(req.body.id).then(function(resolve){
+	});
+});
+
 app.get("/createSpecUser", function(req,res){
 	console.log("valeur admin "+req.session.admin);
 	if(req.session.admin == 1){

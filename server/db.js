@@ -8,6 +8,25 @@ var bdd = mysql.createConnection({
 
 module.exports= {
 	// MYSQL auto escape quand les arguments sont passés avec ?;
+
+	getRooms : function(){
+		return new Promise(function(resolve,reject){
+			bdd.query("SELECT idSalle, statut, user.Nom, paquet.Nom as NomPaquet FROM salle, user, paquet WHERE idJoueur = user.idUser and salle.idPaquet = paquet.idPaquet;", function(err, result, fields){
+				if(err){reject(error);throw err;}{
+					resolve(result);
+				}
+			});
+		});
+	},
+	deleteRoom : function(idSalle){
+		return new Promise(function(resolve, reject){
+			bdd.query("DELETE FROM salle WHERE idSalle = ?;", [idSalle],function(err,result,fields){
+				if(err){reject(error);throw err;}{
+					resolve(result);
+				}
+			});
+		});
+	},
 	searchNamePass : function(name,password){
 		return new Promise(function(resolve , reject){
 			bdd.query("SELECT * FROM user WHERE Nom = ? and Password = ?;",[name,password],function (err,result,fields){
