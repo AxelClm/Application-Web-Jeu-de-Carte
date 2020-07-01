@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+            <!-- Bootstrap js -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+
+		<title>my site</title>
+	</head>
+	<body>
+		<table class="table table-striped ml-3 mr-3">
+			<thead>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">Statut</th>
+					<th scope="col">Participant</th>
+					<th scope="col">Créateur</th>
+					<th scope="col">Paquet</th>
+					<th scope="col">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr <% for(let element of tab){ %>>
+					<td><%= element.idSalle%></td>
+					<td><%= element.statut%></td>
+					<td><%= element.Nom%></td>
+					<td></td>
+					<td><%=element.NomPaquet%></td>
+					<td>
+						<form action="/roomsHistory" method="POST">
+							<input type="hidden" name="id" value="<%= element.idSalle%>">
+							<button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#successModal">Supprimer</button>
+						</form>
+					</td>
+				</tr <% } %>>
+			</tbody>
+		</table>
+		<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="successModalLabel">Suppressionde la salle</h5>
+					</div>
+					<div class="modal-body">
+						<p>La salle a bien été supprimée</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		// lorsqu'on clique sur un bouton le modal s'affiche pendant une seconde avant de partir
+		$('button').click(function () {
+			setTimeout(function(){
+				$('#successModal').modal('hide');
+				window.location.href = "/roomsHistory"}, 1500);
+			// body...
+		})
+	</script>
+</html>
