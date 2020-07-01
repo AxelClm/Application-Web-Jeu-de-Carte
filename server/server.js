@@ -37,6 +37,7 @@ var sharedsession = require("express-socket.io-session");
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var bdd = require('./db.js');
+var mod = require('./files/js/deplacementCart.js')
 var md5 = require('md5');
 var AsyncLock = require('async-lock');
 var lock = new AsyncLock();
@@ -47,9 +48,6 @@ app.get("/login",function(req,res){
 	res.render('login.ejs',{error : 0});
 });
 //
-app.get("/results", function(req, res){
-
-});
 app.get("/roomsHistory",function(req,res){
 	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined){
 		res.redirect("login.ejs");
@@ -58,7 +56,6 @@ app.get("/roomsHistory",function(req,res){
 			res.redirect("home.ejs")
 		}else{
 			bdd.getRooms().then(function(resolve){
-				console.log(resolve)
 				var tabRes = resolve;
 				res.render('roomsHistory.ejs',{tab : tabRes});
 			});

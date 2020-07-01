@@ -60,6 +60,9 @@ socket.on("statut",function(statut){
 			socket.emit("getTas","true");
 			loadGame();
 			break;
+		case 2:
+			intiResult();// affichage des resultats
+			break;
 		
 	}
 });
@@ -518,4 +521,96 @@ function initModalError(){
 	}
 
 	wrapper.appendChild(modal);
+}
+
+function initOutButton(){
+	
+
+}
+
+// Affichage de la table de resultat
+function intiResult(){
+	var tabIdTas = Object.keys(tabTitre);
+
+	var table = document.createElement('table');
+	var thead = document.createElement('thead');
+	var tbody = document.createElement('tbody');
+	var tr1 = document.createElement('tr');
+	var th1 = document.createElement('th');
+	var th2 = document.createElement('th');
+	var th3 = document.createElement('th');
+
+	// bouton qui permet de quitter la salle
+	var btn = document.createElement('button');
+	btn.setAttribute("type","button");
+	btn.id = "out";
+	btn.className = "btn btn-danger m-2";
+	btn.innerText = "Quitter la salle";
+	btn.onclick = function(){
+		window.location.href = "/login";
+	}
+
+	let wrapper = document.getElementsByClassName('wrapper')[0];
+	
+
+	let h1 = document.createElement('h1');
+	h1.innerHTML = "Page de résultats";
+	h1.style.marginRight = "10px";
+
+	wrapper.innerHTML = "";
+	wrapper.style.display = "block";
+
+	//Tableau de résultat
+	table.id = 'tabResult';
+	table.className = "table table-striped";
+
+	th1.innerHTML = "ID carte";
+	th2.innerHTML = "Nom du tas";
+	th3.innerHTML = "Carte favorite";
+
+	th1.setAttribute('scope', 'col');
+	th2.setAttribute('scope', 'col');
+	th3.setAttribute('scope', 'col');
+
+	tr1.appendChild(th1);
+	tr1.appendChild(th2);
+	tr1.appendChild(th3);
+	thead.appendChild(tr1);
+	table.appendChild(thead);
+	table.appendChild(tbody);
+
+	var j = -2;
+	for(let tab in listeTas){
+		j++;
+		for(var i = 0; i < listeTas[tab].length; i++){
+			var tr = document.createElement('tr');
+			var td1 = document.createElement('td');
+			var td2 = document.createElement('td');
+			var td3 = document.createElement('td');
+
+			td1.innerHTML = listeTas[tab][i]['idCarte'];
+			td2.innerHTML = tabTitre[tabIdTas[j]];
+			td3.innerHTML = isCarteFav(listeTas[tab][i]['idCarte']) ? 'Oui' : 'Non';
+
+			tr.appendChild(td1);
+			tr.appendChild(td2);
+			tr.appendChild(td3);
+
+			tbody.appendChild(tr);
+		}
+	}
+
+
+	table.appendChild(tbody);
+	wrapper.appendChild(h1);
+	wrapper.appendChild(btn);
+	wrapper.appendChild(table);
+}
+
+function isCarteFav(idCarte){
+	for(let element in tabFavorite){
+		if(idCarte == tabFavorite[element]) return true;
+	}
+
+	return false
 }
