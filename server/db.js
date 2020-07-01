@@ -1,9 +1,11 @@
 var mysql = require('mysql');
+var xl = require('excel4node');
 var bdd = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "root",
-  database : "DBServ"
+  password: "",
+  database : "DBServ",
+  port:"3306"
 });
 
 module.exports= {
@@ -11,7 +13,7 @@ module.exports= {
 	searchNamePass : function(name,password){
 		return new Promise(function(resolve , reject){
 			bdd.query("SELECT * FROM user WHERE Nom = ? and Password = ?;",[name,password],function (err,result,fields){
-				if(err){reject(error);throw err;}{
+				if(err){reject(err);throw err;}{
 					resolve(result);
 				}
 			});
@@ -53,9 +55,9 @@ module.exports= {
 			});
 		});
 	},
-	createSalle : function(idPaquet,nbrTasMax){
+	createSalle : function(idPaquet,nbrTasMax,idUser){
 		return new Promise(function(resolve,reject){
-			bdd.query("INSERT INTO salle (idPaquet,nbrTasMax,statut) VALUES (?,?,0);",[idPaquet,nbrTasMax],function (err,result,fields){
+			bdd.query("INSERT INTO salle (idPaquet,nbrTasMax,Createur,statut) VALUES (?,?,?,0);",[idPaquet,nbrTasMax,idUser],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -191,6 +193,96 @@ module.exports= {
 		});
 	}
 }
+var wb = new xl.Workbook();
+getSalleUser(1,19).then(function(salles){
+	createXLS(salles,wb,19);
+});
+
+function getSalleUser(Createur,idPaquet){
+	return new Promise(function(resolve,reject){
+		bdd.query("SELECT * FROM salle,tas,lignetas,carte,lignepaquet,user WHERE salle.Createur = ? and salle.idPaquet = ? and salle.statut = 2 and tas.idSalle = salle.idSalle and tas.idTas = lignetas.idTas and carte.idCarte = lignepaquet.idCarte and salle.idJoueur = user.idUser ORDER BY salle.idSalle",
+			[Createur,idPaquet], function(err,result,fields){
+			if(err){reject(err);throw err;}{
+				console.log(result);		
+				resolve(result);
+			}
+		})
+	});
+}
+function createXLS(salles,wb){
+	return new Promise(function(resolve,reject){
+		getPaquet(19).then(function(cartes){
+			
+			let i = 1;
+			var tabAssos = [];
+			//Init tab assos
+			cartes.forEach(carte => {
+				console.log(carte);
+				tabAssos[carte["idLpaquet"]] = i+1;
+				i = i+1;
+			});	
+			console.log(tabAssos);
+			var lastIdS = -1;
+			var ws;
+			var endI = i;
+			var tmp = [];
+			var lock = 0;
+			salles.forEach(salle => {
+				if(salle["idSalle"] != lastIdS){
+					lastIdS = salle["idSalle"];
+					console.log("nouvelle page");
+					ws = wb.addWorksheet(salle["Nom"]);
+					//ecriture des cartes
+					let i=1;
+					ws.cell(i,1).string("cartes");
+					ws.cell(i,2).string("nom");
+					ws.cell(i,3).string(salle["Nom"]);
+					cartes.forEach(carte => {
+						ws.cell(i+1,1).number(carte["idLpaquet"]).style({font: {size: 14,bold:true}});
+						ws.cell(i+1,2).string(String(carte["nom"]));
+						i = i+1;
+					});
+					let tmpId = salle["idSalle"];
+					let tmpWS = ws;
+					lock = lock +1;
+					writeTas(tmpId,tmpWS,i).then(function(){
+						lock = lock -1;
+					});
+
+				}	
+				console.log(tabAssos[salle["idLPaquet"]],3,salle["idTas"]);
+				ws.cell(tabAssos[salle["idLPaquet"]],3).number(salle["idTas"]);
+			});
+		var interval = setInterval(function(){
+			if(lock != 0){
+				console.log(lock," attente");
+			}
+			else{
+				wb.write("Excel.xlsx");
+				clearInterval(interval);
+			}
+		},100)
+		});
+	});
+}
+function writeTas(idSalle,ws,lastIdS){
+	return new Promise(function(resolve,reject){
+		bdd.query("SELECT tas.idTas,tas.nom,tas.idLTFavorite from tas WHERE tas.idSalle = ?",[idSalle],function(err,result,fields){
+			if(err){reject(err);throw err;}{
+				console.log(result);
+				let i = lastIdS +1;
+				result.forEach(tas => {
+					console.log(i,1);
+					ws.cell(i,1).number(tas["idTas"]);
+					ws.cell(i,2).string(tas["nom"]);
+					ws.cell(i,3).string(String(tas["idLTFavorite"]));
+					i = i+1;
+				});
+				resolve(result);
+			}
+		});
+	});
+}
 function createPaquet(Createur,Nom){
 	return new Promise(function(resolve,reject){
 		bdd.query("INSERT INTO paquet (Createur,Nom) VALUES (?,?)",[Createur,Nom], function(err,result,fields){
@@ -267,7 +359,7 @@ function initTas(idPaquet,idTas){
 }
 function getPaquet(idPaquet){
 	return new Promise(function(resolve,reject){
-			bdd.query("SELECT * FROM lignepaquet WHERE idPaquet = ?",idPaquet,function (err,result,fields){
+			bdd.query("SELECT * FROM lignepaquet,carte WHERE idPaquet = ? and lignepaquet.idCarte = carte.idCarte",idPaquet,function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				console.log(result);
 				resolve(result);
