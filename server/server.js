@@ -184,7 +184,7 @@ app.post("/result",urlencodedParser,function(req,res){
 					console.log(err)
 				}
 				else{
-					fs.unlink(name, (err) => {
+					fs.unlink(target, (err) => {
 					  if (err) {
 					    console.error(err)
 					    return
