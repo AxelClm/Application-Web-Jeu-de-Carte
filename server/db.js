@@ -191,13 +191,27 @@ module.exports= {
 				resolve(resolved);
 			})
 		});
+	},
+	getPaquetSalle: function(idUser){
+		return new Promise(function(resolve,reject){
+			bdd.query("SELECT DISTINCT salle.idPaquet,paquet.Nom FROM `salle`,paquet WHERE salle.Createur = ? and salle.idPaquet = paquet.idPaquet",[idUser], function(err,result,fields){
+				if(err){reject(err);throw err;}{
+					resolve(result);
+				}
+			});
+		});
+	},
+	writeResult: function(idUser,idPaquet){
+		return new Promise(function(resolve,reject){
+			let wb = new xl.Workbook();
+			getSalleUser(idUser,idPaquet).then(function(salles){
+				createXLS(salles,wb,idPaquet).then(function(name){
+					resolve(name);
+				});
+			});
+		});
 	}
 }
-var wb = new xl.Workbook();
-getSalleUser(1,19).then(function(salles){
-	createXLS(salles,wb,19);
-});
-
 function getSalleUser(Createur,idPaquet){
 	return new Promise(function(resolve,reject){
 		bdd.query("SELECT * FROM salle,tas,lignetas,carte,lignepaquet,user WHERE salle.Createur = ? and salle.idPaquet = ? and salle.statut = 2 and tas.idSalle = salle.idSalle and tas.idTas = lignetas.idTas and carte.idCarte = lignepaquet.idCarte and salle.idJoueur = user.idUser ORDER BY salle.idSalle",
@@ -209,9 +223,9 @@ function getSalleUser(Createur,idPaquet){
 		})
 	});
 }
-function createXLS(salles,wb){
+function createXLS(salles,wb,idPaquet){
 	return new Promise(function(resolve,reject){
-		getPaquet(19).then(function(cartes){
+		getPaquet(idPaquet).then(function(cartes){
 			
 			let i = 1;
 			var tabAssos = [];
@@ -231,7 +245,7 @@ function createXLS(salles,wb){
 				if(salle["idSalle"] != lastIdS){
 					lastIdS = salle["idSalle"];
 					console.log("nouvelle page");
-					ws = wb.addWorksheet(salle["Nom"]);
+					ws = wb.addWorksheet(String(salle["Nom"]));
 					//ecriture des cartes
 					let i=1;
 					ws.cell(i,1).string("cartes");
@@ -244,9 +258,9 @@ function createXLS(salles,wb){
 					});
 					let tmpId = salle["idSalle"];
 					let tmpWS = ws;
-					lock = lock +1;
+					lock = lock + 1;
 					writeTas(tmpId,tmpWS,i).then(function(){
-						lock = lock -1;
+						lock = lock - 1;
 					});
 
 				}	
@@ -258,10 +272,19 @@ function createXLS(salles,wb){
 				console.log(lock," attente");
 			}
 			else{
-				wb.write("Excel.xlsx");
-				clearInterval(interval);
+				let name = "files/Result/"+idPaquet+Date.now()+".xlsx"
+				wb.write(name,function(err,stats){
+					 if (err) {
+    					console.error(err);
+  					} 
+  					else {
+    					console.log(stats); // Prints out an instance of a node.js fs.Stats object
+    					clearInterval(interval);
+						resolve(name);
+  					}
+				});
 			}
-		},100)
+		},1000)
 		});
 	});
 }
