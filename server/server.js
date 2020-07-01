@@ -38,6 +38,7 @@ var sharedsession = require("express-socket.io-session");
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var bdd = require('./db.js');
+var mod = require('./files/js/deplacementCart.js')
 var md5 = require('md5');
 var AsyncLock = require('async-lock');
 var lock = new AsyncLock();
@@ -48,6 +49,26 @@ app.get("/login",function(req,res){
 	res.render('login.ejs',{error : 0});
 });
 //
+app.get("/roomsHistory",function(req,res){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined){
+		res.redirect("login.ejs");
+	}else{
+		if (req.session.admin != 1) {
+			res.redirect("home.ejs")
+		}else{
+			bdd.getRooms().then(function(resolve){
+				var tabRes = resolve;
+				res.render('roomsHistory.ejs',{tab : tabRes});
+			});
+		}
+	}
+});
+
+app.post("/roomsHistory", urlencodedParser, function(req,res){
+	bdd.deleteRoom(req.body.id).then(function(resolve){
+	});
+});
+
 app.get("/createSpecUser", function(req,res){
 	console.log("valeur admin "+req.session.admin);
 	if(req.session.admin == 1){

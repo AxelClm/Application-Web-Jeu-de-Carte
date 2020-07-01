@@ -60,6 +60,9 @@ socket.on("statut",function(statut){
 			socket.emit("getTas","true");
 			loadGame();
 			break;
+		case 2:
+			intiResult();// affichage des resultats
+			break;
 		
 	}
 });
@@ -135,7 +138,7 @@ function switchGameMode(){
 		wrapper.className ="wrapper";
 		createSideBar(wrapper);
 		createContent(wrapper);
-		createModal(wrapper,7);
+		createModal(wrapper);
 		createModalRenameTas(wrapper);
 	container.innerHTML = "";
 	container.appendChild(wrapper);
@@ -216,7 +219,7 @@ function createContent(wrapper){
 		content.appendChild(contenuImg);
 	wrapper.appendChild(content)
 }
-function createModal(wrapper,nbrTas){
+function createModal(wrapper){
 	let modalFade = document.createElement("div");
 		modalFade.id="exampleModal";
 		modalFade.className="modal fade";
@@ -249,7 +252,7 @@ function createModal(wrapper,nbrTas){
 								inputButton.setAttribute("checked","true");
 							div.appendChild(inputButton);
 							let label = document.createElement("label");
-								label.setAttribute("for","t"+i);
+								label.setAttribute("for","t"+tasDB[i]["idTas"]);
 								label.innerHTML = tasDB[i]["nom"];
 							div.appendChild(label);
 						modalBody.appendChild(div);
@@ -383,9 +386,9 @@ function initRenameModal(){
 // initialisation du tableau qui contient les noms
 // donnés au tas par le joueur
 function initTabTitre(){
-	for(var i = 0; i < tasDB.length; i++){
-		tabTitre[tasDB[i]["idTas"]] = null;
-		tabFavorite[tasDB[i]["idTas"]] = null;
+	for(var i = 1; i < tasDB.length; i++){
+		tabTitre[tasDB[i]["idTas"]] = tasDB[i]["nom"]; // on copie les noms qui sont dans tasDB au cas où il y a une déconnexion de la part du joueur 
+		tabFavorite[tasDB[i]["idTas"]] = null;         // car tasDB garde les titres donnés par le joueur
 	}
 	console.log(tabTitre);
 }
@@ -429,6 +432,7 @@ function initButton(){
 				$("#contenuImg img").each(function(index,element){
 					$(element).unbind('click');
 				});
+				tabFavorite[getCurrTas()] = idCarte;
 				setTimeout(function(){ $("img").attr("data-toggle", "modal"); }, 100); //réactivation du modal
 			});
 		};
@@ -496,10 +500,10 @@ function initModalError(){
 
 	// on indique les tas qui n'ont pas de carte favorite
 	for(let i = 1; i < tasDB.length; i++){
-		if (tasDB[i].idLTFavorite == null){
+		if ((tasDB[i].idLTFavorite == null) && (listeTas[tasDB[i].idTas].length != 0)){
 			let p = document.createElement("p");
 			p.style.marginBottom = "10px";
-			var node = document.createTextNode(tasDB[i].nom +" n'a pas de carte favorite.");
+			var node = document.createTextNode(tabTitre[tasDB[i].idTas] +" n'a pas de carte favorite.");
 			p.appendChild(node);
 			modalBody.appendChild(p);
 		}
@@ -507,14 +511,106 @@ function initModalError(){
 
 	// on indique les tas qui n'ont pas été renommés
 	for(let i = 1; i < tasDB.length; i++){
-		if (tasDB[i].nom.includes("Tas n°")){
+		if ((tabTitre[tasDB[i].idTas].includes("Tas n°")) && (listeTas[tasDB[i].idTas].length != 0)){
 			let p = document.createElement("p");
 			p.style.marginBottom = "10px";
-			var node = document.createTextNode(tasDB[i].nom +" doit être renommé");
+			var node = document.createTextNode(tabTitre[tasDB[i].idTas] +" doit être renommé.");
 			p.appendChild(node);
 			modalBody.appendChild(p);
 		}
 	}
 
 	wrapper.appendChild(modal);
+}
+
+function initOutButton(){
+	
+
+}
+
+// Affichage de la table de resultat
+function intiResult(){
+	var tabIdTas = Object.keys(tabTitre);
+
+	var table = document.createElement('table');
+	var thead = document.createElement('thead');
+	var tbody = document.createElement('tbody');
+	var tr1 = document.createElement('tr');
+	var th1 = document.createElement('th');
+	var th2 = document.createElement('th');
+	var th3 = document.createElement('th');
+
+	// bouton qui permet de quitter la salle
+	var btn = document.createElement('button');
+	btn.setAttribute("type","button");
+	btn.id = "out";
+	btn.className = "btn btn-danger m-2";
+	btn.innerText = "Quitter la salle";
+	btn.onclick = function(){
+		window.location.href = "/login";
+	}
+
+	let wrapper = document.getElementsByClassName('wrapper')[0];
+	
+
+	let h1 = document.createElement('h1');
+	h1.innerHTML = "Page de résultats";
+	h1.style.marginRight = "10px";
+
+	wrapper.innerHTML = "";
+	wrapper.style.display = "block";
+
+	//Tableau de résultat
+	table.id = 'tabResult';
+	table.className = "table table-striped";
+
+	th1.innerHTML = "ID carte";
+	th2.innerHTML = "Nom du tas";
+	th3.innerHTML = "Carte favorite";
+
+	th1.setAttribute('scope', 'col');
+	th2.setAttribute('scope', 'col');
+	th3.setAttribute('scope', 'col');
+
+	tr1.appendChild(th1);
+	tr1.appendChild(th2);
+	tr1.appendChild(th3);
+	thead.appendChild(tr1);
+	table.appendChild(thead);
+	table.appendChild(tbody);
+
+	var j = -2;
+	for(let tab in listeTas){
+		j++;
+		for(var i = 0; i < listeTas[tab].length; i++){
+			var tr = document.createElement('tr');
+			var td1 = document.createElement('td');
+			var td2 = document.createElement('td');
+			var td3 = document.createElement('td');
+
+			td1.innerHTML = listeTas[tab][i]['idCarte'];
+			td2.innerHTML = tabTitre[tabIdTas[j]];
+			td3.innerHTML = isCarteFav(listeTas[tab][i]['idCarte']) ? 'Oui' : 'Non';
+
+			tr.appendChild(td1);
+			tr.appendChild(td2);
+			tr.appendChild(td3);
+
+			tbody.appendChild(tr);
+		}
+	}
+
+
+	table.appendChild(tbody);
+	wrapper.appendChild(h1);
+	wrapper.appendChild(btn);
+	wrapper.appendChild(table);
+}
+
+function isCarteFav(idCarte){
+	for(let element in tabFavorite){
+		if(idCarte == tabFavorite[element]) return true;
+	}
+
+	return false
 }

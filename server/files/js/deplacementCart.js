@@ -119,6 +119,9 @@
 					case true:
 						// on passe à la page de résultat 
 						console.log("on peut passer à la page de résultat");
+						console.log(listeTas);
+						console.log(tabTitre);
+						console.log(tabFavorite);
 						break;
 
 					case false:
@@ -129,7 +132,7 @@
 						}
 						initModalError();
 						$('#Error').modal('show');
-						console.log("il manque des noms de titre et cartes favorrite");
+						console.log("il manque des noms de titre et cartes favorite");
 						break;
 
 					default:
@@ -192,6 +195,9 @@ function displayBtn(){
 function isOver(){
 	let tab = [];
 
+	console.log("tasDB");
+	console.log(tasDB);
+
 	//on récupère toute les balises <a> 
 	var x = document.getElementsByTagName('a');
 	console.log(x);
@@ -205,14 +211,17 @@ function isOver(){
 	tab.shift() // on enlève le premier élément car c'est le tas initial
 				// il n'a pas a être vérifié
 
-	// on vérifie si tous les tas sont renommés (excepté Tas n°0)
+	var i = 1;
+	// on vérifie si tous les tas sont renommés et ont une carte favorite (excepté Tas n°0)
 	for(let element of tab){
-		if (element.text.includes("Tas n°")) return false;
-	}
-	
-	//on vérifie si tous les tas ont une carte favorite (excepté Tas n°0)
-	for(let i = 1; i < tasDB.length; i++){
-		if (tasDB[i].idLTFavorite == null) return false;
+
+		if((listeTas[element.id].length != 0)){
+			if(((tasDB[i].idLTFavorite == null)) || (element.text.includes("Tas n°"))){
+				return false;
+			}
+		}
+		
+		i++;
 	}
 
 	return true;
