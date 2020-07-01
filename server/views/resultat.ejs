@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Resultat</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	</head>
+	<body>
+		<div class="container">
+			<h1>Génération et téléchargement des résultats</h1>
+			<form method="post" id="formSalle" action="/result">
+				<div class="row">
+					<div class="form-group col-md-3">
+						<label>Selection du paquet ou les résultats doivent être générés</label>
+						<select id="idPaquet" name="idPaquet" class="form-control">
+							<% paquets.forEach( p => { %>
+								<option value='<%=p["idPaquet"]%>'><%= p["Nom"]%></option>
+							<% }); %>
+						</select>
+					</div>
+				</div>
+				<button type="submit" class="btn btn-primary">Soumettre</button>
+
+			</form>
+		</div>
+	</body>
+</html>

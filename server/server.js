@@ -1,4 +1,5 @@
 var express = require('express');
+const fs = require('fs')
 var app = express();
 var bodyParser = require('body-parser');
 var multer = require("multer");
@@ -161,6 +162,39 @@ app.get("/create",function(req,res){
 		});
 	}
 });
+app.get("/result",function(req,res){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		bdd.getPaquetSalle(req.session.idUser).then(function(resolve){
+			console.log(resolve);
+			res.render('resultat.ejs',{paquets : resolve});
+		});
+	}
+});
+app.post("/result",urlencodedParser,function(req,res){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		bdd.writeResult(req.session.idUser,req.body.idPaquet).then(function(target){
+			res.download(target,function(err){
+				if(err){
+					console.log(err)
+				}
+				else{
+					fs.unlink(name, (err) => {
+					  if (err) {
+					    console.error(err)
+					    return
+					  }
+					});
+				}
+			});
+		});
+	}
+});
 app.post("/create",urlencodedParser,function(req,res){
 	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
 		res.redirect("/home");
@@ -169,7 +203,7 @@ app.post("/create",urlencodedParser,function(req,res){
 		var nbrTas = req.body.nbrTas;
 		var idPaquet = req.body.idPaquet;;
 		if(nbrTas != undefined || idPaquet != undefined){
-			bdd.createSalle(idPaquet,nbrTas).then(function(resolve){
+			bdd.createSalle(idPaquet,nbrTas,req.session.idUser).then(function(resolve){
 				req.session.salleJoined = resolve["insertId"];
 				bdd.initSalle(req.session.salleJoined,nbrTas,idPaquet);
 				res.redirect("/home");
@@ -379,12 +413,16 @@ io.on('connection',function (socket){
 							io.sockets.in("salle"+session.salleJoined).emit('carteNonVisible',data);
 						});
 						socket.on("disconnect",function(){
-							lock.acquire(session.salleJoined,function(release){ 
-								bdd.setJoueur(session.salleJoined,null).then(function(resolve){
-									bdd.setStatut(session.salleJoined,0).then(function(){
-										io.sockets.in("salle"+session.salleJoined).emit('statut',0);
-										release();
-									});
+							lock.acquire(session.salleJoined,function(release){
+								bdd.getStatut(session.salleJoined).then(function(statut){
+									if(statut !=2){
+										bdd.setJoueur(session.salleJoined,null).then(function(resolve){
+											bdd.setStatut(session.salleJoined,0).then(function(){
+												io.sockets.in("salle"+session.salleJoined).emit('statut',0);
+												release();
+											});
+										});
+									}
 								});
 							},1); 
 						});

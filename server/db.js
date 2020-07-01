@@ -1,9 +1,10 @@
 var mysql = require('mysql');
+var xl = require('excel4node');
 var bdd = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database : "DBServ"
+  database : "DBServ",
 });
 
 module.exports= {
@@ -30,7 +31,7 @@ module.exports= {
 	searchNamePass : function(name,password){
 		return new Promise(function(resolve , reject){
 			bdd.query("SELECT * FROM user WHERE Nom = ? and Password = ?;",[name,password],function (err,result,fields){
-				if(err){reject(error);throw err;}{
+				if(err){reject(err);throw err;}{
 					resolve(result);
 				}
 			});
@@ -72,9 +73,9 @@ module.exports= {
 			});
 		});
 	},
-	createSalle : function(idPaquet,nbrTasMax){
+	createSalle : function(idPaquet,nbrTasMax,idUser){
 		return new Promise(function(resolve,reject){
-			bdd.query("INSERT INTO salle (idPaquet,nbrTasMax,statut) VALUES (?,?,0);",[idPaquet,nbrTasMax],function (err,result,fields){
+			bdd.query("INSERT INTO salle (idPaquet,nbrTasMax,Createur,statut) VALUES (?,?,?,0);",[idPaquet,nbrTasMax,idUser],function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				resolve(result);
 				}
@@ -208,7 +209,120 @@ module.exports= {
 				resolve(resolved);
 			})
 		});
+	},
+	getPaquetSalle: function(idUser){
+		return new Promise(function(resolve,reject){
+			bdd.query("SELECT DISTINCT salle.idPaquet,paquet.Nom FROM `salle`,paquet WHERE salle.Createur = ? and salle.idPaquet = paquet.idPaquet",[idUser], function(err,result,fields){
+				if(err){reject(err);throw err;}{
+					resolve(result);
+				}
+			});
+		});
+	},
+	writeResult: function(idUser,idPaquet){
+		return new Promise(function(resolve,reject){
+			let wb = new xl.Workbook();
+			getSalleUser(idUser,idPaquet).then(function(salles){
+				createXLS(salles,wb,idPaquet).then(function(name){
+					resolve(name);
+				});
+			});
+		});
 	}
+}
+function getSalleUser(Createur,idPaquet){
+	return new Promise(function(resolve,reject){
+		bdd.query("SELECT * FROM salle,tas,lignetas,carte,lignepaquet,user WHERE salle.Createur = ? and salle.idPaquet = ? and salle.statut = 2 and tas.idSalle = salle.idSalle and tas.idTas = lignetas.idTas and carte.idCarte = lignepaquet.idCarte and salle.idJoueur = user.idUser ORDER BY salle.idSalle",
+			[Createur,idPaquet], function(err,result,fields){
+			if(err){reject(err);throw err;}{
+				console.log(result);		
+				resolve(result);
+			}
+		})
+	});
+}
+function createXLS(salles,wb,idPaquet){
+	return new Promise(function(resolve,reject){
+		getPaquet(idPaquet).then(function(cartes){
+			
+			let i = 1;
+			var tabAssos = [];
+			//Init tab assos
+			cartes.forEach(carte => {
+				console.log(carte);
+				tabAssos[carte["idLpaquet"]] = i+1;
+				i = i+1;
+			});	
+			console.log(tabAssos);
+			var lastIdS = -1;
+			var ws;
+			var endI = i;
+			var tmp = [];
+			var lock = 0;
+			salles.forEach(salle => {
+				if(salle["idSalle"] != lastIdS){
+					lastIdS = salle["idSalle"];
+					console.log("nouvelle page");
+					ws = wb.addWorksheet(String(salle["Nom"]));
+					//ecriture des cartes
+					let i=1;
+					ws.cell(i,1).string("cartes");
+					ws.cell(i,2).string("nom");
+					ws.cell(i,3).string(salle["Nom"]);
+					cartes.forEach(carte => {
+						ws.cell(i+1,1).number(carte["idLpaquet"]).style({font: {size: 14,bold:true}});
+						ws.cell(i+1,2).string(String(carte["nom"]));
+						i = i+1;
+					});
+					let tmpId = salle["idSalle"];
+					let tmpWS = ws;
+					lock = lock + 1;
+					writeTas(tmpId,tmpWS,i).then(function(){
+						lock = lock - 1;
+					});
+
+				}	
+				console.log(tabAssos[salle["idLPaquet"]],3,salle["idTas"]);
+				ws.cell(tabAssos[salle["idLPaquet"]],3).number(salle["idTas"]);
+			});
+		var interval = setInterval(function(){
+			if(lock != 0){
+				console.log(lock," attente");
+			}
+			else{
+				let name = "files/Result/"+idPaquet+Date.now()+".xlsx"
+				wb.write(name,function(err,stats){
+					 if (err) {
+    					console.error(err);
+  					} 
+  					else {
+    					console.log(stats); // Prints out an instance of a node.js fs.Stats object
+    					clearInterval(interval);
+						resolve(name);
+  					}
+				});
+			}
+		},1000)
+		});
+	});
+}
+function writeTas(idSalle,ws,lastIdS){
+	return new Promise(function(resolve,reject){
+		bdd.query("SELECT tas.idTas,tas.nom,tas.idLTFavorite from tas WHERE tas.idSalle = ?",[idSalle],function(err,result,fields){
+			if(err){reject(err);throw err;}{
+				console.log(result);
+				let i = lastIdS +1;
+				result.forEach(tas => {
+					console.log(i,1);
+					ws.cell(i,1).number(tas["idTas"]);
+					ws.cell(i,2).string(tas["nom"]);
+					ws.cell(i,3).string(String(tas["idLTFavorite"]));
+					i = i+1;
+				});
+				resolve(result);
+			}
+		});
+	});
 }
 function createPaquet(Createur,Nom){
 	return new Promise(function(resolve,reject){
@@ -286,7 +400,7 @@ function initTas(idPaquet,idTas){
 }
 function getPaquet(idPaquet){
 	return new Promise(function(resolve,reject){
-			bdd.query("SELECT * FROM lignepaquet WHERE idPaquet = ?",idPaquet,function (err,result,fields){
+			bdd.query("SELECT * FROM lignepaquet,carte WHERE idPaquet = ? and lignepaquet.idCarte = carte.idCarte",idPaquet,function (err,result,fields){
 				if(err){reject(err);throw err;}{
 				console.log(result);
 				resolve(result);
