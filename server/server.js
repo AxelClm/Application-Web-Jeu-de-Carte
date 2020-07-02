@@ -56,7 +56,7 @@ app.get("/roomsHistory",function(req,res){
 		if (req.session.admin != 1) {
 			res.redirect("home.ejs")
 		}else{
-			bdd.getRooms().then(function(resolve){
+			bdd.getRooms(req.session.idUser).then(function(resolve){
 				var tabRes = resolve;
 				res.render('roomsHistory.ejs',{tab : tabRes});
 			});
@@ -287,6 +287,17 @@ app.post('/paquet/create/upload',urlencodedParser,function(req,res){
 	}
 
 });
+app.post('/paquet/delete',urlencodedParser,function(req,res){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		bdd.deletePaquet(req.session.idUser,req.body.idPaquet).then(function(resolve){
+			res.redirect("/paquet");
+		});
+	}
+
+});
 app.post('/uploadImage/upload',multer(multerConf).single('photo'),function(req,res){
 	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
 		res.redirect("/home");
@@ -305,7 +316,17 @@ app.post('/uploadImage/upload',multer(multerConf).single('photo'),function(req,r
 	}
 });
 /* Si la page n'est pas trouvée*/
-
+app.get('/leaveRoom',function(req,res,next){
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur != 1){
+		res.redirect("/home");
+	}
+	else{
+		console.log(req.session.salleJoined);
+		req.session.salleJoined = undefined;
+		console.log(req.session.salleJoined);
+		res.redirect("/home");
+	}
+});
 app.use(function(req,res,next){
 	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined){
 		res.redirect("/login");

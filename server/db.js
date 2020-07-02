@@ -9,10 +9,19 @@ var bdd = mysql.createConnection({
 
 module.exports= {
 	// MYSQL auto escape quand les arguments sont passés avec ?;
-
-	getRooms : function(){
+	deletePaquet: function(idUser,idPaquet){
+		return new Promise(function(resolve, reject){
+			bdd.query("DELETE FROM paquet WHERE paquet.idPaquet = ? and paquet.Createur = ?;", [idPaquet,idUser],function(err,result,fields){
+				if(err){reject(error);throw err;}{
+					resolve(result);
+				}
+			});
+		});
+	},
+	getRooms : function(idUser){
 		return new Promise(function(resolve,reject){
-			bdd.query("SELECT idSalle, statut, user.Nom, paquet.Nom as NomPaquet FROM salle, user, paquet WHERE idJoueur = user.idUser and salle.idPaquet = paquet.idPaquet;", function(err, result, fields){
+			bdd.query("SELECT idSalle, statut, user.Nom, paquet.Nom as NomPaquet FROM salle, user, paquet WHERE idJoueur = user.idUser and salle.idPaquet = paquet.idPaquet and salle.Createur = ? UNION SELECT idSalle, statut, salle.idJoueur as Nom , paquet.Nom FROM salle,paquet where salle.idJoueur is null and salle.idPaquet = paquet.idPaquet and salle.Createur = ?;",
+				[idUser,idUser],function(err, result, fields){
 				if(err){reject(error);throw err;}{
 					resolve(result);
 				}
