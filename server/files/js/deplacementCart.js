@@ -144,7 +144,7 @@ function afficheTas(idTas,nom) {
 			
 			console.log(tasDB);
 		}
-	}
+	
 }
 
 function initObserver(){

@@ -1,4 +1,4 @@
-in// creation de la side bar
+// creation de la side bar
 function createSideBar(wrapper){
 	let sidebar = document.createElement("nav");
 		sidebar.id = "sidebar";

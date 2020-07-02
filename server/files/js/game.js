@@ -153,3 +153,4 @@ function switchGameMode(){
 	initmodal();
 	initRenameModal();
 	initTabTitre();	
+}
