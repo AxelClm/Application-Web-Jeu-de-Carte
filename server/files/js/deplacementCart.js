@@ -122,6 +122,7 @@
 						console.log(listeTas);
 						console.log(tabTitre);
 						console.log(tabFavorite);
+						socket.emit("end",true);
 						break;
 
 					case false:

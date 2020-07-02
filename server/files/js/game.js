@@ -553,7 +553,7 @@ function intiResult(){
 	btn.className = "btn btn-danger m-2";
 	btn.innerText = "Quitter la salle";
 	btn.onclick = function(){
-		window.location.href = "/login";
+		window.location.href = "/leaveRoom";
 	}
 
 	let wrapper = document.getElementsByClassName('wrapper')[0];

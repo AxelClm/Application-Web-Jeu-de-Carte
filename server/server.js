@@ -433,6 +433,12 @@ io.on('connection',function (socket){
 						socket.on("carteNonVisible",function(data){
 							io.sockets.in("salle"+session.salleJoined).emit('carteNonVisible',data);
 						});
+						socket.on("end",function(data){
+							bdd.terminateRoom(session.salleJoined).then(function(resolve){
+								io.sockets.in("salle"+session.salleJoined).emit('statut',2);
+								socket.emit('statut',2);
+							})
+						});
 						socket.on("disconnect",function(){
 							lock.acquire(session.salleJoined,function(release){
 								bdd.getStatut(session.salleJoined).then(function(statut){

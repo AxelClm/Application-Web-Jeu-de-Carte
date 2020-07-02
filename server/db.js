@@ -18,6 +18,15 @@ module.exports= {
 			});
 		});
 	},
+	terminateRoom:function(idSalle){
+		return new Promise(function(resolve, reject){
+			bdd.query("UPDATE salle SET salle.statut = 2 where salle.idSalle = ?;", [idSalle],function(err,result,fields){
+				if(err){reject(error);throw err;}{
+					resolve(result);
+				}
+			});
+		});
+	},
 	getRooms : function(idUser){
 		return new Promise(function(resolve,reject){
 			bdd.query("SELECT idSalle, statut, user.Nom, paquet.Nom as NomPaquet FROM salle, user, paquet WHERE idJoueur = user.idUser and salle.idPaquet = paquet.idPaquet and salle.Createur = ? UNION SELECT idSalle, statut, salle.idJoueur as Nom , paquet.Nom FROM salle,paquet where salle.idJoueur is null and salle.idPaquet = paquet.idPaquet and salle.Createur = ?;",
