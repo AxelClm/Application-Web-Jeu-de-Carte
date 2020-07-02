@@ -124,6 +124,12 @@ function switchWaitingForPlayer(){
 		let pURL = document.createElement("p");
 		pURL.innerHTML = urlcourante;
 	container.appendChild(pURL);
+		let button = document.createElement("button");
+			button.onclick = function(){
+				window.location="/leaveRoom";
+			}
+			button.innerHTML = "Quitter la salle";
+	container.appendChild(button);
 }
 function showLoadingScreen(container){
 	let load = document.createElement("div");

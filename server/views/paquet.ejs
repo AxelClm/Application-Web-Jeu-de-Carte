@@ -61,6 +61,18 @@
                         <h3>Ajouter une carte</h3>
                     </div>
                 </div>
+                <div class="col-lg-4">
+                    <div class="mx-auto mb-0 mb-lg-3">
+                        <div class="justify-content-center p-3 py-5 mb-2 bg-light">
+                            <a href="" data-toggle="modal" data-target="#newDeleteModal" >
+                                <svg width="45%" height="45%" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                  <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <h3>Supprimer un paquet</h3>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -114,7 +126,34 @@
                           <button type="submit" class="btn btn-primary">Création</button>
                     </div>
               </form>
-        </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="newDeleteModal" tabindex="-1" role="dialog" aria-labelledby="newDeleteModal" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Veuillez rentrer les informations demandées</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form method="post" action="/paquet/delete">
+              <div class="modal-body">
+                    <div class="form-group">
+                            <label for="idPaquet">Selection du paquet à supprimer</label>
+                            <div> Attention , toutes les parties associés seront supprimés lors de la suppression du paquet </div>
+                            <select id="idPaquet" name="idPaquet" class="form-control">
+                              <% paquets.forEach( p => { %>
+                                <option value='<%=p["idPaquet"]%>'><%= p["paquetNom"]%> : <%= p["nomUser"] %></option>
+                              <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary">Suppression</button>
+                    </div>
+              </form>
         </div>
       </div>
     </div>
