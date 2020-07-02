@@ -44,10 +44,12 @@ socket.on("Spectateur",function(data){
 	}
 });
 socket.on("carteVisible",function(data){
-	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="red";}});
+	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="red";
+																									element.style.borderWidth="thick"}});
 });
 socket.on("carteNonVisible",function(data){
-	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="black";}});
+	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="black";
+																									element.style.borderWidth="thin"}});
 });
 socket.on("statut",function(statut){
 	switch (statut){
@@ -184,7 +186,17 @@ function createSideBar(wrapper){
 							}
 				li.appendChild(tasUL);
 			ul.appendChild(li);
+			let btn = document.createElement("button");
+			btn.setAttribute("type","button");
+			btn.id = "out";
+			btn.className = "btn btn-danger m-2";
+			btn.innerText = "Quitter la salle";
+			btn.onclick = function(){
+			window.location.href = "/leaveRoom";
+			}
+
 		sidebar.appendChild(ul);
+		sidebar.appendChild(btn);
 	wrapper.appendChild(sidebar);
 	$(document).ready(function () {
             $('#sidebarCollapse').on('click', function () {

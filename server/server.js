@@ -201,7 +201,8 @@ app.post("/create",urlencodedParser,function(req,res){
 	}
 	else{
 		var nbrTas = req.body.nbrTas;
-		nbrTas = nbrTas +1;
+		nbrTas = parseInt(nbrTas) +1;
+		console.log(nbrTas)
 		var idPaquet = req.body.idPaquet;;
 		if(nbrTas != undefined || idPaquet != undefined){
 			bdd.createSalle(idPaquet,nbrTas,req.session.idUser).then(function(resolve){

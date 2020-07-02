@@ -393,7 +393,12 @@ function createTas (idSalle,nbrTasMax){
 		return new Promise(function(resolve,reject){
 			var liste = [];
 			for (var i = 0 ; i<nbrTasMax;i++){
-				liste[i]= ["Tas n°"+i, idSalle];
+				if(i == 0){
+					liste[i] = ["A trier",idSalle];
+				}
+				else{
+					liste[i]= ["Tas n°"+i, idSalle];
+				}
 			}
 			console.log(liste);
 			bdd.query("INSERT INTO tas (nom,idSalle) VALUES ?",[liste],function (err,result,fields){
