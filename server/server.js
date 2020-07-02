@@ -201,6 +201,7 @@ app.post("/create",urlencodedParser,function(req,res){
 	}
 	else{
 		var nbrTas = req.body.nbrTas;
+		nbrTas = nbrTas +1;
 		var idPaquet = req.body.idPaquet;;
 		if(nbrTas != undefined || idPaquet != undefined){
 			bdd.createSalle(idPaquet,nbrTas,req.session.idUser).then(function(resolve){
@@ -416,7 +417,7 @@ io.on('connection',function (socket){
 							var dataRead = JSON.parse(data);
 							console.log(dataRead);
 							lock.acquire(session.salleJoined,function(release){
-								bdd.setFavoriteCard(dataRead["idTas"],session.salleJoined,dataRead["idLPaquet"]).then(function(resolve){
+								bdd.setFavoriteCard(dataRead["idTas"],dataRead["idLPaquet"],session.salleJoined).then(function(resolve){
 									io.sockets.in("salle"+session.salleJoined).emit('favorite',JSON.stringify(dataRead));
 									release();
 								});

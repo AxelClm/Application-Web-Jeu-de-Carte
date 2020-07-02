@@ -281,7 +281,7 @@ function createXLS(salles,wb,idPaquet){
 				if(salle["idSalle"] != lastIdS){
 					lastIdS = salle["idSalle"];
 					console.log("nouvelle page");
-					ws = wb.addWorksheet(String(salle["Nom"]));
+					ws = wb.addWorksheet();
 					//ecriture des cartes
 					let i=1;
 					ws.cell(i,1).string("cartes");
@@ -334,7 +334,13 @@ function writeTas(idSalle,ws,lastIdS){
 					console.log(i,1);
 					ws.cell(i,1).number(tas["idTas"]);
 					ws.cell(i,2).string(tas["nom"]);
-					ws.cell(i,3).string(String(tas["idLTFavorite"]));
+					console.log(tas);
+					if(tas["idLTFavorite"] != null){
+						ws.cell(i,3).number(tas["idLTFavorite"]);
+					}
+					else{
+						ws.cell(i,3).string(String(tas["idLTFavorite"]));
+					}
 					i = i+1;
 				});
 				resolve(result);
