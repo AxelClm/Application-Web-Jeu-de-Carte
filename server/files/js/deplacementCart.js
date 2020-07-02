@@ -108,35 +108,38 @@ function afficheTas(idTas,nom) {
 	if(Spectateur == 0){
 		initObserver();
 	}
+		displayBtn();
 
-	displayBtn();
+		let btnEnd = document.getElementById("end");
+		if (btnEnd != null) {
+			btnEnd.onclick = function(){
+				switch(isOver()){
 
-	let btnEnd = document.getElementById("end");
-	if (btnEnd != null) {
-		btnEnd.onclick = function(){
-			switch(isOver()){
+					case true:
+						// on passe à la page de résultat 
+						console.log("on peut passer à la page de résultat");
+						console.log(listeTas);
+						console.log(tabTitre);
+						console.log(tabFavorite);
+						socket.emit("end",true);
+						break;
 
-				case true:
-					// on passe à la page de résultat 
-					console.log("on peut passer à la page de résultat");
-					console.log(listeTas);
-					console.log(tabTitre);
-					console.log(tabFavorite);
-					break;
+					case false:
+						// affichage pop-up
+						let modalError = document.getElementsByClassName('Error');
+						if(modalError != null){
+							$('#Error').remove();// suppression pour pas qu'il y est plusieurs pop-up
+						}
+						initModalError();
+						$('#Error').modal('show');
+						console.log("il manque des noms de titre et cartes favorite");
+						break;
 
-				case false:
-					// affichage pop-up
-					let modalError = document.getElementsByClassName('Error');
-					if(modalError != null){
-						$('#Error').remove();// suppression pour pas qu'il y est plusieurs pop-up
-					}
-					initModalError();
-					$('#Error').modal('show');
-					console.log("il manque des noms de titre et cartes favorite");
-					break;
-
-				default:
-					break;
+					default:
+						break;
+				}
+				
+				console.log(tasDB);
 			}
 			
 			console.log(tasDB);

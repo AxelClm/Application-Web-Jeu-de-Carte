@@ -44,10 +44,12 @@ socket.on("Spectateur",function(data){
 	}
 });
 socket.on("carteVisible",function(data){
-	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="red";}});
+	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="red";
+																									element.style.borderWidth="thick"}});
 });
 socket.on("carteNonVisible",function(data){
-	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="black";}});
+	$("#contenuImg img").each(function(index,element){if(element.getAttribute("idLPaquet") == data){element.style.borderColor="black";
+																									element.style.borderWidth="thin"}});
 });
 socket.on("statut",function(statut){
 	switch (statut){
@@ -151,4 +153,3 @@ function switchGameMode(){
 	initmodal();
 	initRenameModal();
 	initTabTitre();	
-}

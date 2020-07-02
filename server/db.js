@@ -18,6 +18,15 @@ module.exports= {
 			});
 		});
 	},
+	terminateRoom:function(idSalle){
+		return new Promise(function(resolve, reject){
+			bdd.query("UPDATE salle SET salle.statut = 2 where salle.idSalle = ?;", [idSalle],function(err,result,fields){
+				if(err){reject(error);throw err;}{
+					resolve(result);
+				}
+			});
+		});
+	},
 	getRooms : function(idUser){
 		return new Promise(function(resolve,reject){
 			bdd.query("SELECT idSalle, statut, user.Nom, paquet.Nom as NomPaquet FROM salle, user, paquet WHERE idJoueur = user.idUser and salle.idPaquet = paquet.idPaquet and salle.Createur = ? UNION SELECT idSalle, statut, salle.idJoueur as Nom , paquet.Nom FROM salle,paquet where salle.idJoueur is null and salle.idPaquet = paquet.idPaquet and salle.Createur = ?;",
@@ -272,7 +281,7 @@ function createXLS(salles,wb,idPaquet){
 				if(salle["idSalle"] != lastIdS){
 					lastIdS = salle["idSalle"];
 					console.log("nouvelle page");
-					ws = wb.addWorksheet(String(salle["Nom"]));
+					ws = wb.addWorksheet();
 					//ecriture des cartes
 					let i=1;
 					ws.cell(i,1).string("cartes");
@@ -325,7 +334,13 @@ function writeTas(idSalle,ws,lastIdS){
 					console.log(i,1);
 					ws.cell(i,1).number(tas["idTas"]);
 					ws.cell(i,2).string(tas["nom"]);
-					ws.cell(i,3).string(String(tas["idLTFavorite"]));
+					console.log(tas);
+					if(tas["idLTFavorite"] != null){
+						ws.cell(i,3).number(tas["idLTFavorite"]);
+					}
+					else{
+						ws.cell(i,3).string(String(tas["idLTFavorite"]));
+					}
 					i = i+1;
 				});
 				resolve(result);
@@ -378,7 +393,12 @@ function createTas (idSalle,nbrTasMax){
 		return new Promise(function(resolve,reject){
 			var liste = [];
 			for (var i = 0 ; i<nbrTasMax;i++){
-				liste[i]= ["Tas n°"+i, idSalle];
+				if(i == 0){
+					liste[i] = ["A trier",idSalle];
+				}
+				else{
+					liste[i]= ["Tas n°"+i, idSalle];
+				}
 			}
 			console.log(liste);
 			bdd.query("INSERT INTO tas (nom,idSalle) VALUES ?",[liste],function (err,result,fields){

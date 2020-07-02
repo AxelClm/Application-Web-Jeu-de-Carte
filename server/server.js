@@ -65,33 +65,55 @@ app.get("/roomsHistory",function(req,res){
 });
 
 app.post("/roomsHistory", urlencodedParser, function(req,res){
-	bdd.deleteRoom(req.body.id).then(function(resolve){
-	});
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined){
+		res.redirect("login.ejs");
+	}
+	else{
+		let idSalle = req.body.id;
+		if(isNaN(idSalle)){
+			res.redirect("/roomsHistory");
+		}
+		else{
+			bdd.deleteRoom(parseInt(idSalle)).then(function(resolve){
+			});
+		}
+	}
 });
 
 app.get("/createSpecUser", function(req,res){
-	console.log("valeur admin "+req.session.admin);
-	if(req.session.admin == 1){
-		res.render("createUser.ejs");
-	}else{
-		res.redirect("/home");
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined){
+		res.redirect("login.ejs");
+	}
+	else{
+		console.log("valeur admin "+req.session.admin);
+		if(req.session.admin == 1){
+			res.render("createUser.ejs");
+		}
+		else{
+			res.redirect("/home");
+		}
 	}
 });
 app.post("/createSpecUser",urlencodedParser, function(req,res){
-	var name = req.body.userName;
-	var psswrd = md5(req.body.passwrd);
-	var modo = req.body.moderateur;
+	if(req.session.name == undefined || req.session.idUser == undefined || req.session.spectateur == undefined || req.session.admin != 1){
+		res.redirect("login.ejs");
+	}
+	else{
+		let name = req.body.userName;
+		let psswrd = md5(req.body.passwrd);
+		let modo = req.body.moderateur;
 
-	var arg = modo == "true" ? 1 : 0;
-	
-	bdd.createSpecUser(name, psswrd, arg).then(function(resolve){
-		res.redirect("/home");
-	});
+		let arg = modo == "true" ? 1 : 0;
+		
+		bdd.createSpecUser(name, psswrd, arg).then(function(resolve){
+			res.redirect("/home");
+		});
+	}
 });
 
 app.post("/login",urlencodedParser,function(req,res){
-		var name = req.body.nameUser;
-		var password = req.body.password;
+		let name = req.body.nameUser;
+		let password = req.body.password;
 	if (typeof(name) == typeof("str") && typeof(password) == typeof("str")){
 		name = ent.encode(req.body.nameUser);
 		password = md5(req.body.password);
@@ -178,21 +200,27 @@ app.post("/result",urlencodedParser,function(req,res){
 		res.redirect("/home");
 	}
 	else{
-		bdd.writeResult(req.session.idUser,req.body.idPaquet).then(function(target){
-			res.download(target,function(err){
-				if(err){
-					console.log(err)
-				}
-				else{
-					fs.unlink(target, (err) => {
-					  if (err) {
-					    console.error(err)
-					    return
-					  }
-					});
-				}
+		let idPaquet = req.body.idPaquet;
+		if(isNaN(idPaquet)){
+			res.redirect("/home");
+		}
+		else{
+			bdd.writeResult(req.session.idUser,parseInt(idPaquet)).then(function(target){
+				res.download(target,function(err){
+					if(err){
+						console.log(err)
+					}
+					else{
+						fs.unlink(target, (err) => {
+						  if (err) {
+						    console.error(err)
+						    return
+						  }
+						});
+					}
+				});
 			});
-		});
+		}
 	}
 });
 app.post("/create",urlencodedParser,function(req,res){
@@ -200,16 +228,22 @@ app.post("/create",urlencodedParser,function(req,res){
 		res.redirect("/home");
 	}
 	else{
-		var nbrTas = req.body.nbrTas;
-		var idPaquet = req.body.idPaquet;;
-		if(nbrTas != undefined || idPaquet != undefined){
-			bdd.createSalle(idPaquet,nbrTas,req.session.idUser).then(function(resolve){
-				req.session.salleJoined = resolve["insertId"];
-				bdd.initSalle(req.session.salleJoined,nbrTas,idPaquet);
-				res.redirect("/home");
-			});
+		let nbrTas = req.body.nbrTas;
+		let idPaquet = req.body.idPaquet;
+		if(isNaN(nbrTas) || isNaN(idPaquet)){
+			res.redirect("/home");
 		}
-		
+		else{
+			nbrTas = parseInt(nbrTas) +1;
+			idPaquet = parseInt(idPaquet);
+			if(nbrTas != undefined || idPaquet != undefined){
+				bdd.createSalle(idPaquet,nbrTas,req.session.idUser).then(function(resolve){
+					req.session.salleJoined = resolve["insertId"];
+					bdd.initSalle(req.session.salleJoined,nbrTas,idPaquet);
+					res.redirect("/home");
+				});
+			}
+		}
 	}
 });
 app.get("/result",function(req,res){
@@ -261,19 +295,24 @@ app.post('/paquet/create',urlencodedParser,function(req,res){
 		res.redirect("/home");
 	}
 	else{
-		console.log(req.body.namePaquet);
+		let namePaquet = ent.encode(req.body.namePaquet);
 		bdd.getCartes().then(function(resolve){
-		console.log(resolve);
-		req.session.namePaquet = req.body.namePaquet;
-		if(req.body.idPaquet == undefined){
-			res.render('paquetCreate.ejs',{namePaquet : req.body.namePaquet,cartes: resolve,importPaquet : "null"});
-		}
-		else{
-			bdd.getLPaquet(req.body.idPaquet).then(function(resolve2){
-				res.render('paquetCreate.ejs',{namePaquet : req.body.namePaquet,cartes: resolve,importPaquet : resolve2});
-			});
-		}
-	});
+			req.session.namePaquet = namePaquet;
+			if(req.body.idPaquet == undefined){
+				res.render('paquetCreate.ejs',{namePaquet : req.body.namePaquet,cartes: resolve,importPaquet : "null"});
+			}
+			else{
+				let idPaquet = req.body.idPaquet;
+				if(isNaN(idPaquet)){
+					res.render("/home");
+				}
+				else{
+					bdd.getLPaquet(parseInt(idPaquet)).then(function(resolve2){
+						res.render('paquetCreate.ejs',{namePaquet : namePaquet,cartes: resolve,importPaquet : resolve2});
+					});
+				}
+			}
+		});
 	}
 });
 app.post('/paquet/create/upload',urlencodedParser,function(req,res){
@@ -292,9 +331,15 @@ app.post('/paquet/delete',urlencodedParser,function(req,res){
 		res.redirect("/home");
 	}
 	else{
-		bdd.deletePaquet(req.session.idUser,req.body.idPaquet).then(function(resolve){
-			res.redirect("/paquet");
-		});
+		let idPaquet = req.body.idPaquet;
+		if(isNaN(idPaquet)){
+			res.redirect("/home");
+		}
+		else{
+			bdd.deletePaquet(req.session.idUser,parseInt(idPaquet)).then(function(resolve){
+				res.redirect("/paquet");
+			});
+		}
 	}
 
 });
@@ -305,8 +350,8 @@ app.post('/uploadImage/upload',multer(multerConf).single('photo'),function(req,r
 	else{
 	   console.log(req.file);
 		if(req.file){
-			var name = req.file.filename;
-			var label = req.body.label;
+			let name = ent.encode(req.file.filename);
+			let label = req.body.label;
 			console.log("INSERT IMAGE : ",name,label);
 			bdd.addCarte(name,label).then(function(resolve){
 				console.log(resolve);
@@ -406,7 +451,7 @@ io.on('connection',function (socket){
 							var dataRead = JSON.parse(data);
 							console.log(dataRead)
 							lock.acquire(session.salleJoined,function(release){
-								bdd.renameTas(dataRead["idTas"],session.salleJoined,dataRead["nNom"]).then(function(resolve){
+								bdd.renameTas(dataRead["idTas"],session.salleJoined,ent.encode(dataRead["nNom"])).then(function(resolve){
 									io.sockets.in("salle"+session.salleJoined).emit('renameTas',JSON.stringify(dataRead));
 									release();
 								});
@@ -416,7 +461,7 @@ io.on('connection',function (socket){
 							var dataRead = JSON.parse(data);
 							console.log(dataRead);
 							lock.acquire(session.salleJoined,function(release){
-								bdd.setFavoriteCard(dataRead["idTas"],session.salleJoined,dataRead["idLPaquet"]).then(function(resolve){
+								bdd.setFavoriteCard(dataRead["idTas"],dataRead["idLPaquet"],session.salleJoined).then(function(resolve){
 									io.sockets.in("salle"+session.salleJoined).emit('favorite',JSON.stringify(dataRead));
 									release();
 								});
@@ -432,6 +477,12 @@ io.on('connection',function (socket){
 						});
 						socket.on("carteNonVisible",function(data){
 							io.sockets.in("salle"+session.salleJoined).emit('carteNonVisible',data);
+						});
+						socket.on("end",function(data){
+							bdd.terminateRoom(session.salleJoined).then(function(resolve){
+								io.sockets.in("salle"+session.salleJoined).emit('statut',2);
+								socket.emit('statut',2);
+							})
 						});
 						socket.on("disconnect",function(){
 							lock.acquire(session.salleJoined,function(release){
