@@ -1,4 +1,4 @@
-// creation de la side bar
+in// creation de la side bar
 function createSideBar(wrapper){
 	let sidebar = document.createElement("nav");
 		sidebar.id = "sidebar";
@@ -28,6 +28,16 @@ function createSideBar(wrapper){
 							}
 				li.appendChild(tasUL);
 			ul.appendChild(li);
+
+			let btn = document.createElement("button");
+			btn.setAttribute("type","button");
+			btn.id = "out";
+			btn.className = "btn btn-danger m-2";
+			btn.innerText = "Quitter la salle";
+			btn.onclick = function(){
+				window.location.href = "/leaveRoom";
+			}
+			sidebar.appendChild(btn);
 		sidebar.appendChild(ul);
 	wrapper.appendChild(sidebar);
 	$(document).ready(function () {
@@ -404,7 +414,7 @@ function intiResult(){
 	btn.className = "btn btn-danger m-2";
 	btn.innerText = "Quitter la salle";
 	btn.onclick = function(){
-		window.location.href = "/login";
+		window.location.href = "/leaveRoom";
 	}
 
 	let wrapper = document.getElementsByClassName('wrapper')[0];
