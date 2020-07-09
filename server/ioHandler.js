@@ -1,4 +1,4 @@
-module.exports = function(io,lock,bdd){
+module.exports = function(io,lock,bdd,ent){
 	io.on('connection',function (socket){		
 	var session = socket.handshake.session;
 	if(session.name == undefined || session.idUser == undefined || session.spectateur == undefined){

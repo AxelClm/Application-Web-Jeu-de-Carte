@@ -379,6 +379,6 @@ app.use(function(req,res,next){
 		res.redirect("/home");
 	}
 });
-require('./ioHandler.js')(io,lock,bdd);
+require('./ioHandler.js')(io,lock,bdd,ent);
 server.listen(8080);
 
