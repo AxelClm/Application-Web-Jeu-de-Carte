@@ -11,7 +11,7 @@ function initTas(tas, carte){
 		listeTas[tas[i]["idTas"]] = [];
 
 	}
-	console.log(listeTas);
+	//console.log(listeTas);
 	// ajout de carte dans le tas initial
 	/*
 	for (var i = 0; i < carte.length; i++){
@@ -21,19 +21,19 @@ function initTas(tas, carte){
 	carte.forEach(row => {
 		listeTas[row["idTas"]].push({idCarte :row["idCarte"],image :row["image"], idLpaquet: row["idLpaquet"]});
 	});
-	console.log(listeTas);
+	//console.log(listeTas);
 }
 
 //methode qui supprime Element de son tas pour
 //le déplacer vers tas choisi par l'utilisateur
 function changementTas (choix, idCarte){
 	//on cherche la position de la carte selectionee dans le tableau
-	console.log(choix,idCarte);
+	//console.log(choix,idCarte);
 	var indexCarte = listeTas[tasActuel].findIndex(x => x.idCarte == idCarte);
 	var tmp = listeTas[tasActuel].splice(indexCarte, 1);
-	console.log("Information du changement :");
-	console.log(tmp);
-	console.log(choix);
+	//console.log("Information du changement :");
+	//console.log(tmp);
+	//console.log(choix);
 
 	tmp = tmp[0];
 	//On envoie la requet au serveur
@@ -41,15 +41,18 @@ function changementTas (choix, idCarte){
 	socket.emit("MoveCardToTas",JSON.stringify(data));
 	//on transfert la carte dans le tas selectionné
 	listeTas[choix].push(tmp);
-	console.log("Nouveau tableau");
-	console.log(listeTas);
+	//console.log("Nouveau tableau");
+	//console.log(listeTas);
 
 	//on reactualise l'affichage
 	afficheTas(tasActuel);
 }
 function changementTas2 (choix,idLpaquet,ancienTas){
+
+	var tasDepart = (tabTitre[getCurrTas()] === undefined) ? "A trier" : tabTitre[getCurrTas()];
+	var tasArrivee = (tabTitre[choix] === undefined) ? "A trier" : tabTitre[choix];
 	//on cherche la position de la carte selectionee dans le tableau
-	console.log("La Carte"+idLpaquet+"Doit être bougée dans le tas "+choix+"depuis le tas"+ancienTas);
+	console.log("La Carte "+idLpaquet+" doit être bougée dans le tas \""+tasArrivee+"\" depuis le tas \""+tasDepart+"\"");
 	var indexCarte = listeTas[ancienTas].findIndex(x => x.idLpaquet == idLpaquet);
 	var tmp = listeTas[ancienTas].splice(indexCarte, 1);
 	tmp = tmp[0];
@@ -64,7 +67,7 @@ function changementTas2 (choix,idLpaquet,ancienTas){
 function afficheTas(idTas,nom) {
 	// on ajoute dans la balise <div> les cartesayant pour id "contenuImg"
 	tasActuel =idTas;
-	console.log("tas choisi = "+idTas);
+	//console.log("tas choisi = "+idTas);
 	var conteneur = document.getElementById('contenuImg');
 	$("#contenuImg").stop();
 	$("#contenuImg").hide();
@@ -78,10 +81,10 @@ function afficheTas(idTas,nom) {
 	//On change l'affichage
 	$("#nomTas").html(nom);
 	$("#capacitéTas").html(listeTas[idTas].length);
-	console.log(listeTas);
-	console.log(listeTas[idTas]);
+	//console.log(listeTas);
+	//console.log(listeTas[idTas]);
 	idFavorite = tasDB[tasDB.findIndex(x => x.idTas == idTas)].idLTFavorite;
-	console.log("idFavorite: "+idFavorite);
+	//console.log("idFavorite: "+idFavorite);
 	//on ajoute les images a la balise <div> avec le classe image
 	//on ajoute les images dans la balise <div id="contenuImg">
 	//on commence par 1 car le premier indice contient l'id du tas
@@ -91,7 +94,7 @@ function afficheTas(idTas,nom) {
 			img.setAttribute("data-toggle","modal");
 			img.setAttribute("data-target","#exampleModal");
 		}
-		console.log((listeTas[idTas][i]["image"]+(".png")));
+		//console.log((listeTas[idTas][i]["image"]+(".png")));
 		img.setAttribute("src","/images/"+(listeTas[idTas][i]["image"]));
 		img.setAttribute('id',listeTas[idTas][i]["idCarte"]);
 		img.setAttribute('idLpaquet',listeTas[idTas][i]["idLpaquet"])
@@ -117,10 +120,10 @@ function afficheTas(idTas,nom) {
 
 					case true:
 						// on passe à la page de résultat 
-						console.log("on peut passer à la page de résultat");
-						console.log(listeTas);
-						console.log(tabTitre);
-						console.log(tabFavorite);
+						//console.log("on peut passer à la page de résultat");
+						//console.log(listeTas);
+						//console.log(tabTitre);
+						//console.log(tabFavorite);
 						socket.emit("end",true);
 						break;
 
@@ -132,17 +135,17 @@ function afficheTas(idTas,nom) {
 						}
 						initModalError();
 						$('#Error').modal('show');
-						console.log("il manque des noms de titre et cartes favorite");
+						//console.log("il manque des noms de titre et cartes favorite");
 						break;
 
 					default:
 						break;
 				}
 				
-				console.log(tasDB);
+				//console.log(tasDB);
 			}
 			
-			console.log(tasDB);
+			//console.log(tasDB);
 		}
 	
 }
@@ -199,12 +202,12 @@ function displayBtn(){
 function isOver(){
 	let tab = [];
 
-	console.log("tasDB");
-	console.log(tasDB);
+	//console.log("tasDB");
+	//console.log(tasDB);
 
 	//on récupère toute les balises <a> 
 	var x = document.getElementsByTagName('a');
-	console.log(x);
+	//console.log(x);
 
 	// on garde seulement les balises <a> qui ont un id
 	// (vu que les balises <a> avec un id renvoi au tas) 

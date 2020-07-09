@@ -9,19 +9,19 @@ function createSideBar(wrapper){
 					let lien = document.createElement("a");
 						lien.href="#tasSubMenu";
 						lien.setAttribute("data-toggle","collapse");
-						lien.setAttribute("aria-expended","false");
+						lien.setAttribute("aria-expended","true");
 						lien.className = "dropdown-toggle";
 						lien.innerHTML="Tas";
 				li.appendChild(lien);
 					let tasUL = document.createElement("ul");
-						tasUL.className="collapse list-unstyled";
+						tasUL.className="collapse list-unstyled collapse show";
 						tasUL.id = "tasSubMenu";
 							for(var i = 0;i<tasDB.length;i++){
 								let liTas = document.createElement("li");
 										let tas = document.createElement("a");
 										tas.num = tasDB[i]["idTas"];
 										tas.id = tasDB[i]["idTas"];
-										tas.onclick = function(){console.log(this.num);afficheTas(this.num,this.innerHTML)};
+										tas.onclick = function(){/*console.log(this.num)*/;afficheTas(this.num,this.innerHTML)};
 										tas.innerHTML = tasDB[i]["nom"];
 									liTas.appendChild(tas);
 								tasUL.appendChild(liTas);
@@ -234,7 +234,7 @@ function initRenameModal(){
 		$('#validation').unbind().click(function (){
 			currTas = getCurrTas();
 			var field = $("#titretas").val(); // le contenue du champs de text
-			console.log(field);
+			//console.log(field);
 			modal.modal('hide');
       		socket.emit("renommerTas",JSON.stringify({idTas: currTas, nNom : field}));
 			//on met a jour le tableau contenant la liste des noms
@@ -248,7 +248,7 @@ function initRenameModal(){
 			$('#'+currTas).text(field);
 			// on vide le champ de text
 			$("#titretas").val('');
-			console.log(tabTitre);
+			//console.log(tabTitre);
 		});
 	});
 }
@@ -260,7 +260,7 @@ function initTabTitre(){
 		tabTitre[tasDB[i]["idTas"]] = tasDB[i]["nom"]; // on copie les noms qui sont dans tasDB au cas où il y a une déconnexion de la part du joueur 
 		tabFavorite[tasDB[i]["idTas"]] = null;         // car tasDB garde les titres donnés par le joueur
 	}
-	console.log(tabTitre);
+	//console.log(tabTitre);
 }
 
 //Méthode qui crée boutons choix carte favorite et
@@ -286,13 +286,13 @@ function initButton(){
 		let btn2 = document.createElement("button");
 		btn2.setAttribute("type","button");
 		btn2.className = "btn btn-info btn-sm";
-		btn2.innerHTML= "Choisir une carte favorite";
+		btn2.innerHTML= "Choisir une carte représentative du tas";
 		btn2.id = "choixFav";
 		btn2.onclick = function() {
-			console.log("veuillez choisir votre carte favorite");
+			//console.log("veuillez choisir votre carte favorite");
 			$("#contenuImg img").attr("data-toggle", ""); //désactivation du modal pour choisir la carte favorite
 			$("#contenuImg img").click(function(event){
-				console.log($(this).attr('id'));
+				//console.log($(this).attr('id'));
 				var idCarte = $(this).attr('id');
 	      var idLPaquet = $(this).attr('idLPaquet');
 				tasDB[tasDB.findIndex(x => x.idTas == tasActuel)].idLTFavorite = idLPaquet;
